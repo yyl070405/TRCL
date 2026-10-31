@@ -4,8 +4,8 @@
 
 **平台优先级**：Windows 为主（主要开发和发布目标），Linux / macOS 同步维护，Android 见 `android-app/`。
 
-**形态**：Node.js 核心 + 本地 HTTP 服务 + 网页 UI，外加 Electron 外壳。
-好处是同一套核心在 Windows / macOS / Linux / Android（Termux 或 proot）上都能跑，界面用浏览器打开即可，Electron 只负责开窗口和打包。
+**形态**：核心 + 本地 HTTP 服务 + 网页 UI，外加 Electron 外壳。
+同一套核心在 Windows / macOS / Linux / Android（Termux 或 proot）上都能跑，界面用浏览器打开即可；Electron 只负责开窗口和打包，**运行时自带，用户不用装 Node**。
 
 ---
 
@@ -26,7 +26,17 @@
 
 ## 快速开始
 
-要求 Node.js ≥ 20（推荐 22+）。
+### 直接用（不需要装任何东西）
+
+下载安装包（[Releases](https://github.com/yyl070405/TRCL/releases)）：Windows 的 NSIS 安装器、Linux 的 AppImage/deb、macOS 的 dmg。
+
+- **不需要装 Node.js**：Electron 里自带运行时（打包产物内置 Node 20 + Electron 33），启动器是独立程序
+- **不需要手动装 Java**：启动时缺对应版本会从 Zulu / Oracle 下载到启动器目录
+- 数据都在安装目录下的 `data`，卸载不删存档
+
+### 从源码运行（开发用）
+
+只有开发和打包才需要 Node.js ≥ 20；普通用户用上面的安装包即可。
 
 > 要把项目搬到另一台电脑（含存档、账号、Java 路径注意事项），见 [docs/PORTING.md](docs/PORTING.md)。
 
@@ -34,6 +44,8 @@
 npm start            # 启动本地服务
 # 浏览器打开 http://127.0.0.1:34120
 ```
+
+桌面窗口：`npm install && npm run app`。打包：`npm run dist`。
 
 首次使用：
 

@@ -62,8 +62,17 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "shortcutName": "TRCL",
-      "deleteAppDataOnUninstall": false
-    }
+      "deleteAppDataOnUninstall": false,
+      "installerLanguages": [
+        "zh_CN",
+        "en_US"
+      ],
+      "runAfterFinish": true
+    },
+    "electronLanguages": [
+      "zh-CN",
+      "en-US"
+    ]
   },
   "main": "electron/main.cjs",
   "author": "yyl070405 <yyl070405@users.noreply.github.com>",

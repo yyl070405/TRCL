@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   push:
     tags: ["v*"]
+  pull_request:
+    paths: [".github/workflows/build.yml"]
+
+permissions:
+  contents: write
 
 jobs:
   linux:
@@ -14,7 +19,23 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - run: npx electron-builder --linux AppImage deb --x64
+      - name: 打 Linux 包
+        shell: bash
+        run: |
+          set -o pipefail
+          npx electron-builder --linux AppImage deb --x64 2>&1 | tee build-linux.log
+      - name: 失败日志推到 ci-logs 分支
+        if: failure()
+        continue-on-error: true
+        shell: bash
+        run: |
+          git config user.name "ci-bot"
+          git config user.email "ci-bot@users.noreply.github.com"
+          mkdir -p ci-logs
+          cp build-*.log ci-logs/ 2>/dev/null || true
+          git add ci-logs
+          git commit -m "ci log: ${{ github.job }}" || true
+          git push -f origin HEAD:ci-logs || true
       - uses: actions/upload-artifact@v4
         with:
           name: linux-x64
@@ -30,7 +51,23 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - run: npx electron-builder --win nsis --x64
+      - name: 打 Windows 包
+        shell: bash
+        run: |
+          set -o pipefail
+          npx electron-builder --win nsis --x64 2>&1 | tee build-windows.log
+      - name: 失败日志推到 ci-logs 分支
+        if: failure()
+        continue-on-error: true
+        shell: bash
+        run: |
+          git config user.name "ci-bot"
+          git config user.email "ci-bot@users.noreply.github.com"
+          mkdir -p ci-logs
+          cp build-*.log ci-logs/ 2>/dev/null || true
+          git add ci-logs
+          git commit -m "ci log: ${{ github.job }}" || true
+          git push -f origin HEAD:ci-logs || true
       - uses: actions/upload-artifact@v4
         with:
           name: windows-x64
@@ -49,7 +86,23 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - run: npx electron-builder --mac dmg --${{ matrix.arch }}
+      - name: 打 macOS 包
+        shell: bash
+        run: |
+          set -o pipefail
+          npx electron-builder --mac dmg --${{ matrix.arch }} 2>&1 | tee build-macos-${{ matrix.arch }}.log
+      - name: 失败日志推到 ci-logs 分支
+        if: failure()
+        continue-on-error: true
+        shell: bash
+        run: |
+          git config user.name "ci-bot"
+          git config user.email "ci-bot@users.noreply.github.com"
+          mkdir -p ci-logs
+          cp build-*.log ci-logs/ 2>/dev/null || true
+          git add ci-logs
+          git commit -m "ci log: ${{ github.job }}" || true
+          git push -f origin HEAD:ci-logs || true
       - uses: actions/upload-artifact@v4
         with:
           name: macos-${{ matrix.arch }}
