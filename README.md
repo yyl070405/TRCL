@@ -1,6 +1,6 @@
 # TRCL · Tiny Runtime Craft Launcher
 
-**Tiny Runtime Craft Launcher**：一个自己写的 Minecraft: Java 版启动器，思路对齐 HMCL（Hello Minecraft! Launcher）/ PCL（Plain Craft Launcher）：下载版本、补全依赖、拼启动参数、管实例和模组。
+**Tiny Runtime Craft Launcher**：一个自己让AI写的 Minecraft: Java 版启动器，思路对齐 HMCL（Hello Minecraft! Launcher）/ PCL（Plain Craft Launcher）：下载版本、补全依赖、拼启动参数、管实例和模组。
 
 **平台优先级**：Windows 为主（主要开发和发布目标），Linux / macOS 同步维护，Android 见 `android-app/`。
 
