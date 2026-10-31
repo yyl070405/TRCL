@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "mc-launcher-android"
+rootProject.name = "trcl-android"
 include(":core", ":app")

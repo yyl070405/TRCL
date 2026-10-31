@@ -1,4 +1,4 @@
-# MC Launcher
+# TRCL
 
 一个自己写的 Minecraft: Java 版启动器，思路对齐 HMCL / PCL：下载版本、补全依赖、拼启动参数、管实例和模组。
 

@@ -6,7 +6,7 @@
 
     <application
         android:allowBackup="false"
-        android:label="MC Launcher"
+        android:label="TRCL"
         android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
 
         <activity

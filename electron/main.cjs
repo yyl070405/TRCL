@@ -44,7 +44,7 @@ async function createWindow() {
     minWidth: 780,
     minHeight: 560,
     backgroundColor: '#0f1115',
-    title: 'MC Launcher',
+    title: 'TRCL',
     autoHideMenuBar: true,
     webPreferences: {
       contextIsolation: true,

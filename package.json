@@ -1,9 +1,9 @@
 {
-  "name": "mc-launcher",
+  "name": "trcl",
   "version": "0.1.0",
   "private": true,
   "license": "GPL-3.0-or-later",
-  "description": "Cross-platform Minecraft Java Edition launcher (Windows / macOS / Linux / Android web UI)",
+  "description": "TRCL — cross-platform Minecraft Java Edition launcher",
   "type": "module",
   "engines": {
     "node": ">=20"
@@ -18,7 +18,7 @@
   },
   "build": {
     "appId": "dev.mclauncher.app",
-    "productName": "MC Launcher",
+    "productName": "TRCL",
     "files": [
       "src/**/*",
       "ui/**/*",

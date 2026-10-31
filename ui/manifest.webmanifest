@@ -1,6 +1,6 @@
 {
-  "name": "MC Launcher",
-  "short_name": "MC Launcher",
+  "name": "TRCL",
+  "short_name": "TRCL",
   "description": "Minecraft Java Edition 启动器",
   "start_url": "/",
   "scope": "/",
