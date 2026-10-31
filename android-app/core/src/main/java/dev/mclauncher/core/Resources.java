@@ -186,7 +186,7 @@ public final class Resources {
         StringBuilder sb = new StringBuilder();
         sb.append(component.name).append(" ").append(component.version).append("\n");
         if (component.manualOnly()) {
-            sb.append("没有官方直链，请从已安装的 FCL / Pojav 中提取，或联系维护者。\n");
+            sb.append("没有官方直链，请从官方发布页或已安装的运行时中提取。\n");
         } else {
             sb.append("下载地址（任选一个）：\n");
             for (String u : expandUrls(component)) {

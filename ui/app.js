@@ -107,7 +107,6 @@ function renderMain() {
         <button class="secondary" id="repairBtn">检查文件</button>
         <button class="secondary" id="gameSettingsBtn">游戏设置</button>
         ${state.data.capabilities?.input ? '<button class="secondary" id="hudBtn">HUD 触屏</button>' : ''}
-        <button class="secondary" id="exportFclBtn">导出到 FCL</button>
         <select id="memSel" style="width:auto" title="最大内存">
           ${[1024, 2048, 4096, 6144, 8192].map((m) => `<option value="${m}" ${m === inst.memoryMb ? 'selected' : ''}>${m / 1024} GB 内存</option>`).join('')}
         </select>
@@ -133,7 +132,6 @@ function renderMain() {
   $('#repairBtn')?.addEventListener('click', () => installInstance(inst.id));
   $('#gameSettingsBtn')?.addEventListener('click', () => openGameSettings(inst));
   $('#hudBtn')?.addEventListener('click', () => window.openHud(inst.id));
-  $('#exportFclBtn')?.addEventListener('click', () => exportToFcl(inst));
   $('#deleteBtn')?.addEventListener('click', () => removeInstance(inst));
   $('#memSel')?.addEventListener('change', async (e) => {
     await api(`/api/instances/${inst.id}`, { method: 'PATCH', body: { memoryMb: Number(e.target.value) } });
@@ -243,8 +241,6 @@ function watchJob(jobId) {
         state.timer = null;
         if (job.type === 'launch') {
           toast(job.error ? `启动失败：${job.error}` : '游戏已退出');
-        } else if (job.type === 'fcl') {
-          toast(job.error ? `导出失败：${job.error}` : `已导出到 FCL：${job.result?.versionId || ''}，打开 FCL 选这个版本启动`, job.error ? 'error' : '');
         } else {
           toast(job.error ? `失败：${job.error}` : '完成', job.error ? 'error' : '');
         }
@@ -381,17 +377,6 @@ async function openGameSettings(inst) {
       }
     };
   });
-}
-
-async function exportToFcl(inst) {
-  if (!confirm(`把「${inst.name}」导出到 FCL？\n只新增文件，不覆盖 FCL 里已有的版本。`)) return;
-  try {
-    const { jobId } = await api(`/api/instances/${inst.id}/export-fcl`, { method: 'POST', body: { merge: true } });
-    toast('开始导出到 FCL…');
-    watchJob(jobId);
-  } catch (e) {
-    toast(e.message, 'error');
-  }
 }
 
 async function removeInstance(inst) {

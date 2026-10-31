@@ -8,7 +8,6 @@ import { AccountStore, LoginSessions, MicrosoftAuth, offlineAuth } from './core/
 import { chooseJava, findJavas, installJre, probeJava } from './core/java.js';
 import { buildCommand, launch as spawnLaunch, requiredJavaMajor } from './core/launch.js';
 import { installLoader } from './core/loaders.js';
-import { exportToFcl as exportInstanceToFcl } from './core/fcl.js';
 import { ensureLanguage, readOptions, updateOptions, LANGUAGES } from './core/options.js';
 import { inputAvailable } from './core/input.js';
 import { screenAvailable } from './core/screen.js';
@@ -280,17 +279,6 @@ export class LauncherApp {
     return info;
   }
 
-  /** 把实例导出到 FCL，用它的 JRE + 渲染器在 Android 上真正启动。 */
-  async exportFcl(instanceId, opts = {}) {
-    const instance = await this.instances.get(instanceId);
-    await this.prepareInstance(instance, opts.onProgress || (() => {}));
-    return exportInstanceToFcl({
-      instance,
-      meta: this.meta,
-      root: this.root,
-      ...opts,
-    });
-  }
 
   async diskUsage() {
     return this.installer.diskUsage();

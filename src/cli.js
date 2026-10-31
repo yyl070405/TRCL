@@ -119,22 +119,6 @@ try {
       for (const h of r.hits) console.log(`${h.title}  (${h.slug})  ↓${h.downloads}\n  ${h.description}`);
       break;
     }
-    case 'fcl-export': {
-      const inst = (await app.instances.list()).find((i) => i.id === positional[0] || i.name === positional[0]);
-      if (!inst) throw new Error('找不到实例');
-      const r = await app.exportFcl(inst.id, {
-        fclRoot: opts.fcl,
-        assets: opts.assets !== 'false',
-        libraries: opts.libraries !== 'false',
-        merge: Boolean(opts.merge),
-        onProgress: (p) => p.label && console.log(`  ${p.label}`),
-      });
-      console.log(`已导出 ${r.versionId} -> ${r.fclRoot}`);
-      console.log(`版本链: ${r.chain.join(' -> ')}`);
-      console.log(`渲染器: ${r.renderer}，新增文件 ${r.files} 个`);
-      console.log('打开 FCL，在版本列表里选这个版本即可启动。');
-      break;
-    }
     case 'pack': {
       const url = positional[0];
       if (!url) throw new Error('需要 .mrpack 链接');

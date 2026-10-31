@@ -25,13 +25,13 @@ node src/cli.js help
 
 - **零运行时依赖**：不要为了小功能引 npm 包；Node 内置模块优先。Electron/electron-builder 只放 devDependencies。
 - UI 是原生 HTML/CSS/JS，无框架、无构建步骤；`ui/app.js` 是主逻辑，`ui/hud.js` 是触屏 HUD。
-- 许可 **GPL-3.0-or-later**。引入 GPL 代码（如 Pojav/FCL）时保留声明并公开源码。
+- 许可 **GPL-3.0-or-later**。引入 GPL 代码（如 PojavLauncher）时保留声明并公开源码。
 - 注释和用户可见文案用中文。
 - 不要提交 `node_modules/`、`dist/`、`mc-data/`。
 
 ## 当前进度（2026-10-31）
 
-已完成并验证：安装（原版/Fabric/Forge）、启动、ARM64 原生库自动替换、实例/模组/整合包、Modrinth、微软登录（代码）、导出 FCL、游戏设置 options.txt、自动语言、触屏 HUD、Linux ARM64 真机进世界。
+已完成并验证：安装（原版/Fabric/Forge）、启动、ARM64 原生库自动替换、实例/模组/整合包、Modrinth、微软登录（代码）、游戏设置 options.txt、自动语言、触屏 HUD、Linux ARM64 真机进世界。
 
 未完成：**Android APK 的 JRE/LWJGL/GL 转译/启动桥**（见 `mc-launcher/android-app/README.md`）。
 

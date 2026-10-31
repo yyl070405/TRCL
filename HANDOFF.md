@@ -43,7 +43,7 @@ mc-data/             实测数据（654MB）
 
 ## 关键决策与原因
 
-- **不用 FCL 的界面/管理**：用户要求自研管理，只允许复用开源原生库。FCL 导出保留为过渡方案。
+- **自研管理**：界面、实例、账号、下载全部自管；运行时按需下载。
 - **ARM64 替换**：Mojang 只发 x86_64 原生库；在 `linux+arm64` 上换 Maven Central 的 `natives-linux-arm64`，jtracy 只保留主 jar（无 arm64 原生包）。
 - **HUD 用 xdotool 注入**：不重写渲染层，直接给 X11 发键鼠事件；画面用 scrot 截图轮询（约 1.4fps）。
 - **语言只写一次**：`options.txt` 没有 `lang` 才按 `navigator.language` 写，避免覆盖玩家选择。
@@ -51,7 +51,7 @@ mc-data/             实测数据（654MB）
 
 ## 已知问题
 
-- `dist/` 里的安装包是 2026-10-30 的，**不含**之后的 FCL 导出、游戏设置、HUD；需要重新 `npm run dist`。
+- `dist/` 里的安装包是 2026-10-30 的，**不含**之后的游戏设置、HUD；需要重新 `npm run dist`。
 - 触屏 HUD 仅在 Linux + X11 可用；Windows/macOS 会隐藏。
 - 停止游戏偶发留下占存档锁的进程，已改为轮询 6 秒后 SIGKILL，但未做大规模复测。
 - `accounts.json` 明文存 token（当前只有离线账号）。

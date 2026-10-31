@@ -1,6 +1,6 @@
 # TRCL · Tiny Runtime Craft Launcher — Android（自研 Java）
 
-目标是**不依赖 FCL 的启动器界面**，Java 侧自己管下载、实例、参数和启动，只复用开源原生库（JRE、LWJGL patch、GL 转译）。
+目标是 Java 侧自己管下载、实例、参数和启动，只复用开源原生库（JRE、LWJGL patch、GL 转译）。
 
 ## 当前状态
 
@@ -38,7 +38,7 @@ App 目前能「拉清单 → 下版本 JSON → 校验并补全 client/librarie
 
 ## 还缺什么（按顺序）
 
-1. **Android JRE**：普通 Linux JRE 是 glibc 的，跑不了。需要 Pojav/FCL 那类 bionic 版 JRE，首次启动下载解压到 app 私有目录
+1. **Android JRE**：普通 Linux JRE 是 glibc 的，跑不了。需要 Pojav 那类 bionic 版 JRE，首次启动下载解压到 app 私有目录
 2. **LWJGL patch**：Android 没有桌面 GL/GLFW，需要替换 `lwjgl3` 的原生库和 `glfw` 实现（Boardwalk 方案）
 3. **GL 转译**：GL4ES / MobileGlues / ANGLE 之一，产出 `libEGL`/`libGLESv2` 供 LWJGL 加载
 4. **启动桥**：`JNI_CreateJavaVM` 或 fork `bin/java`，把 classpath、`-Dos.name=Linux`、`-Dorg.lwjgl.*.libname` 传进去

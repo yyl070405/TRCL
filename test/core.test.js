@@ -4,7 +4,6 @@ import path from 'node:path';
 import fsp from 'node:fs/promises';
 import os from 'node:os';
 import { buildClasspath, buildCommand, tokenizeArgs } from '../src/core/launch.js';
-import { buildFclSetting } from '../src/core/fcl.js';
 import { applyArchCompat, ARM64_NATIVE_SUPPORT } from '../src/core/install.js';
 import { ensureLanguage, mcLang, mergeOptions } from '../src/core/options.js';
 import { mergeVersions } from '../src/core/meta.js';
@@ -154,22 +153,6 @@ test('规则引擎按 os 过滤', () => {
   assert.equal(matchesRules([{ action: 'allow', os: { name: 'linux' } }], ctx), false);
   assert.equal(matchesRules(undefined, ctx), true);
   assert.equal(matchesRules([{ action: 'disallow', os: { name: 'windows' } }], ctx), false);
-});
-
-test('FCL 配置继承渲染器并覆盖内存', () => {
-  const cfg = buildFclSetting(
-    { memoryMb: 4096 },
-    { renderer: 'com.fcl.plugin.mobileglues', driver: 'Turnip', graphicsBackend: 'default', vulkanDriverSystem: true, notCheckVulkan: true },
-  );
-  assert.equal(cfg.maxMemory, 4096);
-  assert.equal(cfg.renderer, 'com.fcl.plugin.mobileglues');
-  assert.equal(cfg.driver, 'Turnip');
-  assert.equal(cfg.isolateGameDir, true);
-  assert.equal(cfg.usesGlobal, false);
-
-  const fallback = buildFclSetting({ memoryMb: 2048 }, null);
-  assert.equal(fallback.renderer, undefined);
-  assert.equal(fallback.maxMemory, 2048);
 });
 
 test('maven 坐标转路径', () => {

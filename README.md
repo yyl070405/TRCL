@@ -86,7 +86,6 @@ node src/cli.js list
 node src/cli.js launch 生存
 node src/cli.js search sodium --mc=1.21.4 --loader=fabric
 node src/cli.js pack https://cdn.modrinth.com/data/xxx/versions/yyy/pack.mrpack
-node src/cli.js fcl-export 生存            # 导出给 FCL（Android）
 ```
 
 所有命令支持 `--dir=/自定义/数据目录`。
@@ -137,29 +136,12 @@ node src/cli.js fcl-export 生存            # 导出给 FCL（Android）
 
 ### 自研 Android 版（`android-app/`）
 
-另起了一个纯 Java 的 Android 工程，不依赖 FCL 的界面和实例管理：
+另起了一个纯 Java 的 Android 工程：
 
 - 核心已实现并在 JVM 上自检通过（28 项）：规则引擎、Maven/库去重、启动参数拼装、下载计划、并发下载 + SHA1、版本清单、完整性校验与自动补全、assets 索引、微软设备码登录、账号存储
 - `android-app/app` 是 Android 骨架，能「拉清单 → 校验并补全 client/libraries/assets」、填 client id 后可走微软登录
 - JRE / LWJGL patch / GL 转译 / 启动桥还没实现，见 [`android-app/README.md`](android-app/README.md)
 - APK 由 `.github/workflows/android.yml` 在 CI 上构建（这台机器没有 Android SDK）
-
-### 交给 FCL 启动（已实现）
-
-FCL（Fold Craft Launcher）自己带 JRE、打过补丁的 LWJGL 和 MobileGlues 渲染器，所以不用我们实现 Android 启动后端：
-
-```bash
-node src/cli.js fcl-export "1.21.4 Fabric"          # 默认写到 /sdcard/FCL/.minecraft
-node src/cli.js fcl-export "1.21.4 Fabric" --fcl=/自定义/.minecraft
-```
-
-或者在网页界面点「导出到 FCL」。它会：
-
-1. 复制版本继承链（加载器 JSON + 原版 JSON/jar）
-2. 增量补齐 `libraries/`、`assets/`（只补缺失，不覆盖已有文件）
-3. 生成 `fclversion.cfg`，**沿用你现有 FCL 实例的 renderer/driver**（这台机器上是 MobileGlues + Turnip），避免落到默认的 NGGL4ES
-
-之后打开 FCL，版本列表里会出现这个版本，点启动即可。已在真机确认 FCL 会把它列入版本列表（`RefreshedVersionsEvent versions=[1.21.4, 26.3-Fabric, fabric-loader-0.20.1-1.21.4]`）。
 
 ### 在这台手机上直接跑起来了（已验证）
 
@@ -207,7 +189,6 @@ DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1 npm start
 | Forge 54.1.22 安装（含 launcher_profiles.json 前置）、bootstrap/modlauncher 启动 | ✅ 到 LWJGL 初始化 |
 | Modrinth 搜索 / 安装（Fabric API）、jar 元数据解析 | ✅ |
 | 离线账号 | ✅ |
-| 导出到 FCL、FCL 版本列表识别 | ✅ 真机日志确认 |
 | 游戏设置读写（options.txt） | ✅ lang/渲染距离/图形已写入并生效 |
 | 首次启动自动语言（zh-CN → zh_cn） | ✅ 中文界面截图 |
 | 触屏 HUD 按键注入（xdotool） | ✅ 按 T 打出聊天框 |

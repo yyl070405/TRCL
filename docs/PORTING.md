@@ -68,7 +68,6 @@ mv mc-data ~/.local/share/mc-launcher
 | 下载/安装/启动 | ✅ | ✅ | ✅ | ✅（需 JRE + X11） |
 | 游戏设置 / 自动语言 | ✅ | ✅ | ✅ | ✅ |
 | 触屏 HUD | ❌ | ❌ | 需 X11 + xdotool | ✅（Xvfb/Termux:X11） |
-| 导出到 FCL | ❌ | ❌ | ❌ | ✅ |
 | 打包安装包 | 本机或 CI | 本机或 CI | 本机或 CI | 仅 Termux 包 |
 
 ## 6. 存档单独搬

@@ -246,19 +246,6 @@ route('POST', '/api/instances/:id/mods/install', async (_req, body, params) => {
   return { jobId: job.id };
 });
 
-route('POST', '/api/instances/:id/export-fcl', async (_req, body, params) => {
-  const job = jobs.run('fcl', async ({ progress }) => {
-    return app.exportFcl(params.id, {
-      fclRoot: body.fclRoot || undefined,
-      assets: body.assets !== false,
-      libraries: body.libraries !== false,
-      merge: body.merge === true,
-      onProgress: progress,
-    });
-  });
-  return { jobId: job.id };
-});
-
 route('POST', '/api/modpacks', async (_req, body) => {
   const job = jobs.run('modpack', async ({ progress }) => {
     const inst = await installMrpack({

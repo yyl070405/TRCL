@@ -17,13 +17,13 @@
 
 ### Java 21 的缺口
 
-1.21.4 需要 Java 21，但 Pojav 的 JRE 仓库只发到 17；FCL 的 jre21/jre25 是运行时从它自己的服务器拉的，没有独立下载页。
+1.21.4 需要 Java 21。Pojav 的 JRE 仓库只发到 17，目前没有找到 ARM64 Android JRE 21 的公开直链。
 
-可选方案，按优先级：
+当前的可行做法：
 
-1. 找 FCL 的更新源，拿到 jre21 的真实 URL（需要抓一次它的下载请求）
-2. 直接用 FCL 的 APK（160MB，含运行时）提取——但这样又把体积带回来了
-3. 先支持 1.20.4 及以下（Java 17 够用），1.21+ 标记“需要手动提供 JRE 21”
+1. 1.20.4 及以下用 JRE 17 全自动
+2. 1.21+ 标记为“需要手动提供 JRE 21”，界面给出手动放置路径
+3. 若要全自动，需要自行构建 Android JRE 21，或从合法来源取得可再分发的运行时
 
 ## 代码位置
 
@@ -67,7 +67,7 @@ APK 里内置一份兜底清单；优先拉 `https://863214.xyz/runtime/manifest
 
 ## 为什么必须自托管
 
-2026-10 实测：GitHub 的 release 大文件（FCL APK 160MB）在这台机器上下载会被重置（curl exit 56），源码 API 正常。所以运行时不能只依赖 GitHub 直链，需要自己的域名 + 对象存储（Cloudflare R2/Pages）做兜底。
+2026-10 实测：GitHub release 的大文件在这台机器上下载会被重置（curl exit 56），源码 API 正常。所以运行时不能只依赖 GitHub 直链，需要自己的域名 + 对象存储做兜底。
 
 ## 加速源（2026-10 实测）
 
@@ -81,6 +81,5 @@ APK 里内置一份兜底清单；优先拉 `https://863214.xyz/runtime/manifest
 
 实测通过代理可用：
 
-- FCL APK（arm64，168MB）——用于抽取 LWJGL/JRE
 - Pojav JRE 17 ARM64（21MB）
 - MobileGlues 2.0.0 APK（11MB）
