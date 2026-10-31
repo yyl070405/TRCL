@@ -1,6 +1,6 @@
-# TRCL
+# TRCL · Tiny Runtime Craft Launcher
 
-一个自己写的 Minecraft: Java 版启动器，思路对齐 HMCL / PCL：下载版本、补全依赖、拼启动参数、管实例和模组。
+**Tiny Runtime Craft Launcher**：一个自己写的 Minecraft: Java 版启动器，思路对齐 HMCL（Hello Minecraft! Launcher）/ PCL（Plain Craft Launcher）：下载版本、补全依赖、拼启动参数、管实例和模组。
 
 **形态**：Node.js 核心 + 本地 HTTP 服务 + 网页 UI，外加 Electron 外壳。
 好处是同一套核心在 Windows / macOS / Linux / Android（Termux 或 proot）上都能跑，界面用浏览器打开即可，Electron 只负责开窗口和打包。

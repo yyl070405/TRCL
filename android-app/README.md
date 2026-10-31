@@ -1,4 +1,4 @@
-# TRCL Android（自研 Java）
+# TRCL · Tiny Runtime Craft Launcher — Android（自研 Java）
 
 目标是**不依赖 FCL 的启动器界面**，Java 侧自己管下载、实例、参数和启动，只复用开源原生库（JRE、LWJGL patch、GL 转译）。
 
