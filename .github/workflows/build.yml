@@ -70,12 +70,17 @@ jobs:
           Step 'download wix' { curl.exe -sSL -o wix314.zip https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip }
           Expand-Archive wix314.zip -DestinationPath wix -Force
           $wixBin = Join-Path $PWD 'wix'
-          $ver = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          $parts = ((Get-Content package.json -Raw | ConvertFrom-Json).version).Split('.')
+          while ($parts.Count -lt 4) { $parts += '0' }
+          $ver = $parts -join '.'
           $src = Join-Path $PWD 'dist\win-unpacked'
+          $lic = Join-Path $PWD 'installer\NOTICE.rtf'
+          $msi = Join-Path $PWD 'dist' "TRCL-$ver-win-x64.msi"
           Step 'heat' { & (Join-Path $wixBin 'heat.exe') dir $src -cg AppFiles -dr INSTALLFOLDER -gg -g1 -sfrag -srd -var var.SourceDir -out dist\files.wxs }
-          Step 'candle product' { & (Join-Path $wixBin 'candle.exe') -nologo -dSourceDir=$src -dVersion=$ver -dLicenseRtf="$PWD\installer\NOTICE.rtf" -out dist\product.wixobj installer\trcl.wxs }
-          Step 'candle files' { & (Join-Path $wixBin 'candle.exe') -nologo -dSourceDir=$src -out dist\files.wixobj dist\files.wxs }
-          Step 'light' { & (Join-Path $wixBin 'light.exe') -nologo -ext WixUIExtension dist\product.wixobj dist\files.wixobj -out "dist\TRCL-$ver-win-x64.msi" }
+          Step 'candle product' { & (Join-Path $wixBin 'candle.exe') -nologo "-dSourceDir=$src" "-dVersion=$ver" "-dLicenseRtf=$lic" -out dist\product.wixobj installer\trcl.wxs }
+          Step 'candle files' { & (Join-Path $wixBin 'candle.exe') -nologo "-dSourceDir=$src" -out dist\files.wixobj dist\files.wxs }
+          Step 'light' { & (Join-Path $wixBin 'light.exe') -nologo -ext WixUIExtension dist\product.wixobj dist\files.wixobj -out $msi }
+          "MSI: $msi" | Tee-Object -FilePath $log -Append
       - uses: actions/upload-artifact@v4
         with:
           name: windows-x64
