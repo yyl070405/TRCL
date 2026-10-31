@@ -1,0 +1,59 @@
+{
+  "name": "mc-launcher",
+  "version": "0.1.0",
+  "private": true,
+  "license": "GPL-3.0-or-later",
+  "description": "Cross-platform Minecraft Java Edition launcher (Windows / macOS / Linux / Android web UI)",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server/index.js",
+    "dev": "node src/server/index.js --open",
+    "cli": "node src/cli.js",
+    "test": "node --test test/*.test.js",
+    "app": "electron .",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "dev.mclauncher.app",
+    "productName": "MC Launcher",
+    "files": [
+      "src/**/*",
+      "ui/**/*",
+      "electron/**/*",
+      "LICENSE",
+      "THIRD_PARTY_NOTICES.md",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.games"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Game",
+      "synopsis": "Minecraft Java Edition launcher"
+    },
+    "asar": false,
+    "artifactName": "mc-launcher-${version}-${os}-${arch}.${ext}",
+    "icon": "ui/icon-512.png"
+  },
+  "main": "electron/main.cjs",
+  "author": {
+    "name": "MC Launcher Contributors",
+    "email": "dev@example.com"
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^26.18.0"
+  },
+  "homepage": "https://github.com/mc-launcher/mc-launcher"
+}

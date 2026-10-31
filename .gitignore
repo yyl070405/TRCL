@@ -1,0 +1,5 @@
+node_modules/
+dist/
+mc-data/
+*.log
+.DS_Store
