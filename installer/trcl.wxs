@@ -7,10 +7,9 @@
            Language="1033"
            Version="$(var.Version)"
            Manufacturer="yyl070405"
-           Codepage="936"
            UpgradeCode="5a5a9d34-3a34-4ea1-9a52-1a5b2f0d2b8d">
     <Package InstallerVersion="500" Compressed="yes" InstallScope="perUser" />
-    <MajorUpgrade DowngradeErrorMessage="已经安装了更新版本的 TRCL，请先卸载。" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of TRCL is already installed. Uninstall it first." />
     <MediaTemplate EmbedCab="yes" />
 
     <WixVariable Id="WixUILicenseRtf" Value="$(var.LicenseRtf)" />
