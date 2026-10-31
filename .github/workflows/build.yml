@@ -55,6 +55,7 @@ jobs:
           set -o pipefail
           npx electron-builder --win --x64 --publish never 2>&1 | tee build-windows.log
       - name: 生成 MSI（WiX）
+        id: msi
         shell: pwsh
         # 失败不阻塞 exe 发布，日志会推到 ci-logs 分支
         continue-on-error: true
@@ -82,7 +83,8 @@ jobs:
             dist/*.exe
             dist/*.msi
       - name: 失败日志推到 ci-logs 分支
-        if: failure()
+        # continue-on-error 的步骤不会让 job 变成 failure，所以显式看 outcome
+        if: failure() || steps.msi.outcome == 'failure'
         continue-on-error: true
         shell: bash
         run: |
