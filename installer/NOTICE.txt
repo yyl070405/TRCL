@@ -1,0 +1,32 @@
+TRCL（Tiny Runtime Craft Launcher）安装须知
+
+一、这是什么
+TRCL 是第三方的 Minecraft: Java 版启动器，非官方，与 Mojang Studios / Microsoft 没有隶属、赞助或背书关系。Minecraft 是 Mojang Studios 的商标。
+
+二、许可证
+本项目以 GNU GPL v3.0 或更高版本发布。完整许可证随安装目录的 LICENSE 提供，也可在 https://github.com/yyl070405/TRCL 查看。二次分发必须保留 LICENSE 与 NOTICE.md，并在发行页、关于页或安装包可见位置标注来源（TRCL、https://github.com/yyl070405/TRCL、yyl070405）；修改过的需说明改动内容。
+
+三、安装位置与数据
+1. 安装程序让你选择安装目录，选好后自动完成安装。
+2. 游戏文件、下载内容、日志、账号都放在「安装目录\data」下。
+3. 卸载不会删除 data 目录，存档和实例会保留；要彻底清除请手动删除安装目录。
+4. 除系统要求的位置与缓存外，本程序不往用户目录散落文件，不安装驱动、服务、计划任务。
+
+四、不捆绑、不收集
+1. 不捆绑第三方软件，不改浏览器主页和搜索，不弹广告，不设开机自启。
+2. 不收集使用数据，不上传日志。联网只用于下载游戏文件、运行时和登录。
+
+五、游戏文件与账号
+1. 不包含 Minecraft 游戏文件。client jar、库、资源在运行时从官方或镜像下载，使用游戏需要自备合法副本并遵守 Minecraft EULA。
+2. 登录令牌只保存在本机 data 目录，不会上传。
+
+六、Java 运行时
+游戏需要的 Java 运行时可从 Zulu（GPL-2.0-with-classpath-exception）或 Oracle 官方（Oracle 许可，非 GPL）下载。选择 Oracle 表示你自行遵守其许可条款；本程序不再分发这些运行时。
+
+七、担保免责
+本程序按「现状」提供，不提供任何明示或默示担保。因使用本程序造成的存档损坏、数据丢失或其他损失由使用者自行承担，请自行备份重要存档。
+
+八、其余声明
+完整声明见安装目录的 NOTICE.md 与 THIRD_PARTY_NOTICES.md，以及项目主页 https://github.com/yyl070405/TRCL
+
+点击「我接受」并继续安装，表示你已阅读并同意以上内容，同时接受 GNU GPL v3.0 许可证条款。

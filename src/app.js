@@ -20,6 +20,7 @@ const DEFAULT_SETTINGS = {
   javaPath: '',
   javaVendor: 'zulu',
   homeUrl: '',
+  noticeVersion: '',
   defaultMemoryMb: 2048,
   defaultWidth: 854,
   defaultHeight: 480,

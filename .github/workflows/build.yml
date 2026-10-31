@@ -33,9 +33,9 @@ jobs:
           git config user.email "ci-bot@users.noreply.github.com"
           mkdir -p ci-logs
           cp build-*.log ci-logs/ 2>/dev/null || true
-          git add ci-logs
+          git add -f ci-logs
           git commit -m "ci log: ${{ github.job }}" || true
-          git push -f origin HEAD:ci-logs || true
+          git push -f origin HEAD:refs/heads/ci-logs || true
       - uses: actions/upload-artifact@v4
         with:
           name: linux-x64
@@ -65,9 +65,9 @@ jobs:
           git config user.email "ci-bot@users.noreply.github.com"
           mkdir -p ci-logs
           cp build-*.log ci-logs/ 2>/dev/null || true
-          git add ci-logs
+          git add -f ci-logs
           git commit -m "ci log: ${{ github.job }}" || true
-          git push -f origin HEAD:ci-logs || true
+          git push -f origin HEAD:refs/heads/ci-logs || true
       - uses: actions/upload-artifact@v4
         with:
           name: windows-x64
@@ -100,9 +100,9 @@ jobs:
           git config user.email "ci-bot@users.noreply.github.com"
           mkdir -p ci-logs
           cp build-*.log ci-logs/ 2>/dev/null || true
-          git add ci-logs
+          git add -f ci-logs
           git commit -m "ci log: ${{ github.job }}" || true
-          git push -f origin HEAD:ci-logs || true
+          git push -f origin HEAD:refs/heads/ci-logs || true
       - uses: actions/upload-artifact@v4
         with:
           name: macos-${{ matrix.arch }}

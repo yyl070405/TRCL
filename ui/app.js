@@ -2,6 +2,7 @@ const $ = (sel, root = document) => root.querySelector(sel);
 const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+const NOTICE_VERSION = '2026-11-01';
 const LOADER_LABEL = { vanilla: '原版', fabric: 'Fabric', quilt: 'Quilt', forge: 'Forge', neoforge: 'NeoForge' };
 const state = {
   data: null,
@@ -714,6 +715,40 @@ function openSettings() {
   });
 }
 
+function maybeShowNotice() {
+  const settings = state.data?.settings;
+  if (!settings || settings.noticeVersion === NOTICE_VERSION) return;
+  const body = `
+    <div class="hint" style="line-height:1.7">
+      TRCL 是第三方启动器，非官方，与 Mojang Studios / Microsoft 无关，Minecraft 是其商标。<br />
+      本程序不含游戏文件，游戏与 Java 运行时在首次使用时下载；使用游戏需自备正版并遵守 Minecraft EULA。<br />
+      数据都放在安装目录的 <code>data</code> 下，卸载不会删除存档。<br />
+      不捆绑软件、不写注册表、不开机自启、不收集数据。<br />
+      许可证：GPL-3.0-or-later，二次分发需保留声明并标注来源。<br />
+      程序按「现状」提供，不附带担保，请自行备份存档。
+    </div>
+    <div class="hint" style="margin-top:10px">完整内容见安装目录的 NOTICE.md 与 THIRD_PARTY_NOTICES.md。</div>
+    <div class="modal-actions">
+      <button class="secondary" id="ntExit">不同意并退出</button>
+      <button class="primary" id="ntAgree">同意并继续</button>
+    </div>`;
+  modal('使用须知', body, (root) => {
+    root.querySelector('#ntAgree').onclick = async () => {
+      try {
+        await api('/api/settings', { method: 'PATCH', body: { noticeVersion: NOTICE_VERSION } });
+        state.data.settings.noticeVersion = NOTICE_VERSION;
+      } catch (e) {
+        toast(e.message, 'error');
+      }
+      closeModal();
+    };
+    root.querySelector('#ntExit').onclick = () => {
+      closeModal();
+      toast('已取消，关闭窗口即可退出');
+    };
+  });
+}
+
 function openAccounts() {
   const accounts = state.data.accounts || [];
   const body = `
@@ -920,6 +955,8 @@ $('#instanceList').addEventListener('click', (e) => {
   localStorage.setItem('mc.selected', state.selected);
   setView('instance');
 });
+
+maybeShowNotice();
 
 refresh();
 setInterval(() => {

@@ -26,7 +26,8 @@
       "LICENSE",
       "NOTICE.md",
       "THIRD_PARTY_NOTICES.md",
-      "package.json"
+      "package.json",
+      "installer/NOTICE.txt"
     ],
     "win": {
       "target": [
@@ -67,7 +68,8 @@
         "zh_CN",
         "en_US"
       ],
-      "runAfterFinish": true
+      "runAfterFinish": true,
+      "license": "installer/NOTICE.rtf"
     },
     "electronLanguages": [
       "zh-CN",
