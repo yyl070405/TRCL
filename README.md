@@ -285,3 +285,5 @@ npm test
 详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 **二次分发**：依据 GPLv3 §7(b)，分发时必须保留 `LICENSE` 与 `NOTICE.md`，并在发行页标注来源（TRCL、上游仓库地址、作者），修改过的需说明改动。详见 [NOTICE.md](NOTICE.md)。
+
+**解释权**：本项目文档及其中归属条款的解释权归 TRCL 项目（yyl070405）所有；GPL-3.0-or-later 正文本身不受此声明影响，接收者的 GPLv3 权利不因此减少。详见 [NOTICE.md](NOTICE.md)。
