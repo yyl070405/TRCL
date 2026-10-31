@@ -139,6 +139,7 @@ route('GET', '/api/disk', async () => ({
   usage: await app.diskUsage(),
 }));
 
+route('GET', '/api/home', async (_req, _body, _params, query) => app.homeFeed({ force: query?.force === '1' }));
 route('GET', '/api/settings', async () => app.settings);
 route('PATCH', '/api/settings', async (_req, body) => app.saveSettings(body));
 

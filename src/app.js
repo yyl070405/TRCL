@@ -6,6 +6,7 @@ import { VersionInstaller } from './core/install.js';
 import { InstanceManager } from './core/instances.js';
 import { AccountStore, LoginSessions, MicrosoftAuth, offlineAuth } from './core/auth.js';
 import { chooseJava, findJavas, installJre, probeJava } from './core/java.js';
+import { normalizeHomeUrl, parseHomeFeed } from './core/home.js';
 import { buildCommand, launch as spawnLaunch, requiredJavaMajor } from './core/launch.js';
 import { installLoader } from './core/loaders.js';
 import { ensureLanguage, readOptions, updateOptions, LANGUAGES } from './core/options.js';
@@ -18,6 +19,7 @@ const DEFAULT_SETTINGS = {
   msClientId: '',
   javaPath: '',
   javaVendor: 'zulu',
+  homeUrl: '',
   defaultMemoryMb: 2048,
   defaultWidth: 854,
   defaultHeight: 480,
@@ -40,6 +42,7 @@ export class LauncherApp {
     this.running = new Map();
     this._javaCache = null;
     this._javaCacheAt = 0;
+    this._homeCache = null;
     this._sessions = null;
   }
 
@@ -263,6 +266,42 @@ export class LauncherApp {
       },
       languages: LANGUAGES,
     };
+  }
+
+  /**
+   * 「联网主页」：从设置里的 homeUrl 拉一份 JSON 公告，服务端代理避免跨域，
+   * 结果缓存 5 分钟。只返回纯文本字段，界面不渲染任何远程 HTML。
+   */
+  async homeFeed({ force = false } = {}) {
+    const raw = this.settings.homeUrl || '';
+    const url = normalizeHomeUrl(raw);
+    if (!url) return { configured: false, ok: false, url: '', title: '', items: [], error: '' };
+
+    const now = Date.now();
+    const cache = this._homeCache;
+    if (!force && cache && cache.url === url && now - cache.at < 5 * 60 * 1000) return { ...cache.data, cached: true };
+
+    try {
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(12000),
+        headers: { accept: 'application/json' },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      if (text.length > 1024 * 1024) throw new Error('主页内容超过 1 MB');
+      const payload = {
+        configured: true,
+        ok: true,
+        url,
+        ...parseHomeFeed(JSON.parse(text)),
+        error: '',
+        fetchedAt: new Date().toISOString(),
+      };
+      this._homeCache = { url, at: now, data: payload };
+      return payload;
+    } catch (e) {
+      return { configured: true, ok: false, url, title: '', items: [], error: e.message || '拉取失败', fetchedAt: '' };
+    }
   }
 
   async gameOptions(instanceId) {

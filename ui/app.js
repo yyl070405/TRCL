@@ -3,7 +3,14 @@ const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 const LOADER_LABEL = { vanilla: '原版', fabric: 'Fabric', quilt: 'Quilt', forge: 'Forge', neoforge: 'NeoForge' };
-const state = { data: null, selected: localStorage.getItem('mc.selected') || null, job: null, timer: null, versions: null };
+const state = {
+  data: null,
+  selected: localStorage.getItem('mc.selected') || null,
+  view: localStorage.getItem('mc.view') || 'home',
+  job: null,
+  timer: null,
+  versions: null,
+};
 
 async function api(path, { method = 'GET', body } = {}) {
   const res = await fetch(path, {
@@ -47,7 +54,15 @@ function currentInstance() {
 function render() {
   renderAccountChip();
   renderSidebar();
-  renderMain();
+  if (state.view === 'home') renderHome();
+  else renderMain();
+}
+
+function setView(view) {
+  state.view = view;
+  localStorage.setItem('mc.view', view);
+  renderSidebar();
+  render();
 }
 
 function renderAccountChip() {
@@ -67,6 +82,87 @@ function renderSidebar() {
         )
         .join('')
     : '<div class="hint" style="padding:8px 4px">还没有实例</div>';
+}
+
+function renderHome() {
+  const inst = currentInstance();
+  const list = state.data?.instances || [];
+  const main = $('#main');
+  main.innerHTML = `
+    <section class="card hero">
+      <div class="hero-info">
+        <h1>TRCL</h1>
+        <div class="hint">本地核心 + 网页界面。数据、下载和日志都在启动器自己的目录里，不往系统里塞东西。</div>
+        <div class="hero-actions" style="margin-top:14px">
+          ${
+            inst
+              ? `<button class="primary" id="homePlay">启动 ${esc(inst.name)}</button>`
+              : '<button class="primary" id="homeNew">新建实例</button>'
+          }
+          <button class="secondary" id="homeInstances">${list.length} 个实例</button>
+        </div>
+      </div>
+      <div class="hint" style="max-width:280px">
+        主页公告可以在设置里填一个 JSON 地址，留空就只看本地内容。
+      </div>
+    </section>
+    <section class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <h2 style="margin:0">公告</h2>
+        <button class="mini" id="homeRefresh">刷新</button>
+      </div>
+      <div id="homeFeed" class="hint" style="margin-top:12px">读取中…</div>
+    </section>`;
+
+  $('#homeNew')?.addEventListener('click', openNewInstance);
+  $('#homeInstances')?.addEventListener('click', () => {
+    const first = list[0];
+    if (first) {
+      state.selected = first.id;
+      localStorage.setItem('mc.selected', first.id);
+      setView('instance');
+    } else openNewInstance();
+  });
+  $('#homePlay')?.addEventListener('click', () => launch(inst.id));
+  $('#homeRefresh')?.addEventListener('click', () => loadHomeFeed(true));
+  loadHomeFeed(false);
+}
+
+async function loadHomeFeed(force) {
+  const box = $('#homeFeed');
+  if (!box) return;
+  if (force) box.textContent = '刷新中…';
+  let feed;
+  try {
+    feed = await api(`/api/home${force ? '?force=1' : ''}`);
+  } catch (e) {
+    box.innerHTML = `<div class="hint">读取主页失败：${esc(e.message)}</div>`;
+    return;
+  }
+  if (!feed.configured) {
+    box.innerHTML = `<div class="hint">还没有设置联网主页。到「设置 → 联网主页」填一个 JSON 地址即可，格式：<br />
+      <code>{"title":"公告","items":[{"title":"标题","body":"内容","date":"2026-11-01","url":"https://…"}]}</code></div>`;
+    return;
+  }
+  if (!feed.ok) {
+    box.innerHTML = `<div class="hint">拉取失败：${esc(feed.error)}<br /><a href="${esc(feed.url)}" target="_blank" rel="noopener">在浏览器打开</a></div>`;
+    return;
+  }
+  const items = feed.items || [];
+  box.innerHTML = items.length
+    ? `<div class="home-list">${items
+        .map(
+          (item) => `<div class="home-item">
+            <div class="home-item-head">
+              ${item.title ? `<strong>${esc(item.title)}</strong>` : ''}
+              ${item.date ? `<span class="hint">${esc(item.date)}</span>` : ''}
+            </div>
+            ${item.body ? `<div class="hint" style="margin-top:4px">${esc(item.body)}</div>` : ''}
+            ${item.url ? `<a class="hint" href="${esc(item.url)}" target="_blank" rel="noopener" style="margin-top:6px;display:inline-block">查看详情</a>` : ''}
+          </div>`,
+        )
+        .join('')}</div>`
+    : `<div class="hint">${esc(feed.title || '主页')}暂时没有内容。</div>`;
 }
 
 function renderMain() {
@@ -560,6 +656,10 @@ function openSettings() {
       <input id="stMs" value="${esc(s.msClientId || '')}" placeholder="Azure 应用 ID，用于正版登录" />
       <div class="hint" style="margin-top:6px">在 Azure 门户注册“移动和桌面应用”，把 client id 填这里即可用设备码登录。</div>
     </div>
+    <div class="field"><label>联网主页（可选）</label>
+      <input id="stHome" value="${esc(s.homeUrl || '')}" placeholder="https://example.com/trcl-home.json" />
+      <div class="hint" style="margin-top:6px">填一个返回 JSON 公告的地址，主页会显示标题 / 内容 / 链接，只按纯文本渲染。留空则不联网。</div>
+    </div>
     <div class="row-2">
       <div class="field"><label>默认内存 (MB)</label><input id="stMem" type="number" value="${s.defaultMemoryMb}" /></div>
       <div class="field"><label>窗口尺寸</label>
@@ -585,6 +685,7 @@ function openSettings() {
             javaPath: root.querySelector('#stJava').value,
             javaVendor: root.querySelector('#stVendor').value,
             msClientId: root.querySelector('#stMs').value.trim(),
+            homeUrl: root.querySelector('#stHome').value.trim(),
             defaultMemoryMb: Number(root.querySelector('#stMem').value) || 2048,
             defaultWidth: Number(root.querySelector('#stW').value) || 854,
             defaultHeight: Number(root.querySelector('#stH').value) || 480,
@@ -807,6 +908,7 @@ function openImportPack() {
 /* ---------------- 事件绑定 ---------------- */
 
 $('#newInstanceBtn').addEventListener('click', openNewInstance);
+$('#homeBtn').addEventListener('click', () => setView('home'));
 $('#settingsBtn').addEventListener('click', openSettings);
 $('#accountsBtn').addEventListener('click', openAccounts);
 $('#importPackBtn').addEventListener('click', openImportPack);
@@ -816,8 +918,7 @@ $('#instanceList').addEventListener('click', (e) => {
   if (!btn) return;
   state.selected = btn.dataset.id;
   localStorage.setItem('mc.selected', state.selected);
-  renderSidebar();
-  renderMain();
+  setView('instance');
 });
 
 refresh();

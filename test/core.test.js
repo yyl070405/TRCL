@@ -13,6 +13,7 @@ import { mrpackIndex, mmcPack } from '../src/core/export.js';
 import { matchesRules, defaultRuleContext } from '../src/core/rules.js';
 import { mavenPath, offlineUuid, resolveCacheHome, resolveHome, slugify } from '../src/core/util.js';
 import { standardJavaDirs } from '../src/core/java.js';
+import { normalizeHomeUrl, parseHomeFeed } from '../src/core/home.js';
 import { pickZuluPackage, zuluQuery, zuluTarget } from '../src/core/zulu.js';
 import { isArchiveMagic, oracleTarget, parseOracleLinks, pickOraclePackage } from '../src/core/oracle.js';
 
@@ -386,4 +387,29 @@ test('缓存目录走系统缓存位置', () => {
   );
   assert.equal(resolveCacheHome({ platform: 'linux', env: { XDG_CACHE_HOME: '/c' } }), '/c/trcl');
   assert.equal(resolveCacheHome({ platform: 'darwin', home: '/Users/me' }), '/Users/me/Library/Caches/TRCL');
+});
+
+test('联网主页地址只接受 http(s)', () => {
+  assert.equal(normalizeHomeUrl('https://a.com/x.json'), 'https://a.com/x.json');
+  assert.equal(normalizeHomeUrl(' http://a.com '), 'http://a.com/');
+  assert.equal(normalizeHomeUrl('javascript:alert(1)'), '');
+  assert.equal(normalizeHomeUrl('file:///etc/passwd'), '');
+  assert.equal(normalizeHomeUrl(''), '');
+});
+
+test('联网主页 JSON 规整成纯文本条目', () => {
+  const feed = parseHomeFeed({
+    title: '公告',
+    items: [
+      { title: '更新', body: '<b>1.0.1</b> 发布', date: '2026-11-01', url: 'https://a.com/1' },
+      { title: '', body: '' },
+      { title: '坏链接', url: 'javascript:alert(1)' },
+    ],
+  });
+  assert.equal(feed.title, '公告');
+  assert.equal(feed.items.length, 2);
+  assert.equal(feed.items[0].body, '<b>1.0.1</b> 发布');
+  assert.equal(feed.items[0].url, 'https://a.com/1');
+  assert.equal(feed.items[1].url, '');
+  assert.deepEqual(parseHomeFeed(null), { title: '', items: [] });
 });
