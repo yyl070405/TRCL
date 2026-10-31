@@ -275,6 +275,12 @@ npm test
 - 为空时全部走 Mojang 官方，行为不变；只有显式配置才会改写下载地址
 - 启用前需要：域名备案（大陆服务器）、HTTPS 证书、缓存与带宽方案
 
+## 路线图
+
+目标是把 TRCL 做成全能启动器：别人能启动的版本、账号、内容、平台，我们都能覆盖。
+
+完整能力矩阵与里程碑见 [docs/ROADMAP.md](docs/ROADMAP.md)。
+
 ## 许可证
 
 **GPL-3.0-or-later**，见 [LICENSE](LICENSE)。
