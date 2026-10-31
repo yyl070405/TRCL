@@ -242,7 +242,6 @@ function watchJob(jobId) {
         clearInterval(state.timer);
         state.timer = null;
         if (job.type === 'launch') {
-          // 启动任务结束代表游戏进程退出
           toast(job.error ? `启动失败：${job.error}` : '游戏已退出');
         } else if (job.type === 'fcl') {
           toast(job.error ? `导出失败：${job.error}` : `已导出到 FCL：${job.result?.versionId || ''}，打开 FCL 选这个版本启动`, job.error ? 'error' : '');
@@ -796,7 +795,6 @@ setInterval(() => {
   refresh();
 }, 15000);
 
-// 让安卓 Chrome 可以“添加到主屏幕”，像 App 一样打开
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(() => {});
 }

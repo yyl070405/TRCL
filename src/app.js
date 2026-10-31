@@ -21,7 +21,6 @@ const DEFAULT_SETTINGS = {
   defaultWidth: 854,
   defaultHeight: 480,
   closeAfterLaunch: false,
-  // 首次启动按浏览器/系统语言写 options.txt 的 lang
   autoLanguage: true,
   // 预留：自建下载镜像 / 更新接口。留空时仍走 Mojang 官方。
   mirrorBase: '',
@@ -116,7 +115,6 @@ export class LauncherApp {
     let loaderVersion = instance.loaderVersion;
 
     const jsonPath = path.join(this.meta.versionsDir, versionId, `${versionId}.json`);
-    // versionId === mcVersion 说明加载器还没装（创建时先指向原版）
     const loaderPending =
       Boolean(instance.loaderType) && instance.loaderType !== 'vanilla' && versionId === instance.mcVersion;
     if (loaderPending || !(await exists(jsonPath))) {
@@ -141,7 +139,6 @@ export class LauncherApp {
       }
     }
 
-    // 保证继承链上的父版本 JSON 存在
     const json = await this.meta.versionJson(versionId);
     if (json.inheritsFrom) await this.meta.versionJson(json.inheritsFrom);
 
@@ -175,7 +172,6 @@ export class LauncherApp {
     onProgress({ phase: 'prepare', label: '解压原生库…' });
     await this.installer.extractNatives(versionJson, path.join(instance.dir, 'natives'));
 
-    // 首次启动按系统语言写 lang；已有 lang 时不覆盖玩家选择
     if (this.settings.autoLanguage !== false) {
       const lang = await ensureLanguage(instance.dir, locale || process.env.LANGUAGE || process.env.LANG || 'en_us');
       if (lang.changed) onProgress({ phase: 'prepare', label: `游戏语言设为 ${lang.lang}` });

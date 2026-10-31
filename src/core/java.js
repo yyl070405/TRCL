@@ -104,7 +104,6 @@ export async function findJavas(root) {
     const info = await probeJava(p);
     if (info?.major) probed.push(info);
   }
-  // 去重（同一 java.home）
   const seen = new Set();
   return probed.filter((j) => {
     const key = j.home || j.path;
@@ -178,7 +177,6 @@ export async function installJre(major, { root, onProgress = () => {} }) {
     archiveName = await pickArchive(base, platform);
     archiveUrl = base + archiveName;
   } catch (mirrorError) {
-    // 镜像不可达时回退到 Adoptium 官方 API（海外网络更稳）
     onProgress({ phase: 'jre', label: '镜像不可用，尝试 Adoptium 官方源…' });
     const osMap = { windows: 'windows', mac: 'mac', linux: 'linux' };
     const api =

@@ -107,7 +107,6 @@ export function buildFclSetting(instance, template) {
     notCheckVulkan: template?.notCheckVulkan ?? true,
     debugLog: false,
   };
-  // 继承已验证可用的渲染器，避免落到默认 NGGL4ES
   if (template?.renderer) cfg.renderer = template.renderer;
   if (template?.driver) cfg.driver = template.driver;
   return cfg;

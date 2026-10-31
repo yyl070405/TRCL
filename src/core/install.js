@@ -231,7 +231,6 @@ export class VersionInstaller {
       throw err;
     }
 
-    // 资源索引与所有对象
     if (assets) {
       const index = await this.readAssetIndex(versionJson);
       if (index) await this.downloadAssets(index, onProgress);

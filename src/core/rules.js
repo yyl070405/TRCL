@@ -36,7 +36,6 @@ function ruleMatches(rule, ctx) {
         return false;
       }
     }
-    // osx 的 arch 规则在部分版本里写成 "x86"，这里按实际处理
   }
   if (rule.features) {
     for (const [key, val] of Object.entries(rule.features)) {

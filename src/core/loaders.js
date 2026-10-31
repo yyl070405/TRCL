@@ -188,7 +188,6 @@ export async function installForge({ meta, root, mcVersion, loaderVersion, javaP
   if (await exists(path.join(meta.versionsDir, expected, `${expected}.json`))) {
     return { versionId: expected, loaderVersion: version };
   }
-  // 有些安装器会改写 id，扫一下目录
   const dirs = await import('node:fs/promises').then((m) => m.readdir(meta.versionsDir, { withFileTypes: true }));
   const found = dirs.find((d) => d.isDirectory() && d.name.includes('forge') && d.name.startsWith(mcVersion));
   if (!found) throw new Error('Forge 安装完成但找不到生成的版本 JSON');

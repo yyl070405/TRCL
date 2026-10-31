@@ -135,13 +135,11 @@ node src/cli.js fcl-export 生存            # 导出给 FCL（Android）
 - **启动器本身可用**：`node src/server/index.js` 后用手机 Chrome 打开 `http://127.0.0.1:34120`，安装版本、配 Java、装模组、导入整合包都能跑。Termux 里 `pkg install nodejs` 后同理，且不需要 root。
 - **在 Android 上真正启动 Java 版**：本项目不做渲染层，也无法替 PojavLauncher 解决它的图形栈。实测这台设备 Vulkan 兼容层异常、GL4ES 转译启动即崩，换任何启动器都一样。**结论：Android 端定位为管理端**，游戏在 PC 上跑；存档和实例目录可以直接拷过去。
 
-如果以后要做 Android 启动后端，正确做法是调用 PojavLauncher 的运行时，而不是自己 spawn `java`。`src/core/launch.js` 的 `buildCommand` 已经把“生成参数”和“启动进程”分开，接新后端不需要动安装逻辑。
-
 ### 自研 Android 版（`android-app/`）
 
 另起了一个纯 Java 的 Android 工程，不依赖 FCL 的界面和实例管理：
 
-- 核心已实现并在 JVM 上自检通过（18 项）：规则引擎、Maven/库去重、启动参数拼装、下载计划、并发下载 + SHA1、版本清单、完整性校验与自动补全、assets 索引、微软设备码登录、账号存储
+- 核心已实现并在 JVM 上自检通过（28 项）：规则引擎、Maven/库去重、启动参数拼装、下载计划、并发下载 + SHA1、版本清单、完整性校验与自动补全、assets 索引、微软设备码登录、账号存储
 - `android-app/app` 是 Android 骨架，能「拉清单 → 校验并补全 client/libraries/assets」、填 client id 后可走微软登录
 - JRE / LWJGL patch / GL 转译 / 启动桥还没实现，见 [`android-app/README.md`](android-app/README.md)
 - APK 由 `.github/workflows/android.yml` 在 CI 上构建（这台机器没有 Android SDK）
@@ -275,11 +273,9 @@ npm test
 - 为空时全部走 Mojang 官方，行为不变；只有显式配置才会改写下载地址
 - 启用前需要：域名备案（大陆服务器）、HTTPS 证书、缓存与带宽方案
 
-## 路线图
+## 功能状态
 
-目标是把 TRCL 做成全能启动器：别人能启动的版本、账号、内容、平台，我们都能覆盖。
-
-完整能力矩阵与里程碑见 [docs/ROADMAP.md](docs/ROADMAP.md)。
+已实现与未实现的功能清单见 [docs/STATUS.md](docs/STATUS.md)，只记录核实过的状态。
 
 ## 许可证
 
@@ -287,6 +283,6 @@ npm test
 
 - 分发编译好的安装包时，必须同时提供完整对应源码。源码地址：本仓库；如果你改了代码再分发，也要公开你的修改。
 - 本项目**不含** Minecraft 游戏文件（运行时下载），也**不含** PojavLauncher 代码。依赖的 Electron / electron-builder / Node 均为 MIT。
-- 以后若接入 PojavLauncher（GPLv3）做 Android 启动后端，整个分发包按 GPLv3 处理，保留原作者声明并在发行页给出源码与修改说明。
+- 若分发物包含 PojavLauncher（GPLv3）代码，整个分发包按 GPLv3 处理，保留原作者声明并提供源码。
 
 详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

@@ -129,7 +129,6 @@ export function buildCommand({ versionJson, instance, auth, javaPath, root, widt
   if (versionJson.arguments?.jvm) {
     jvm.push(...flattenArguments(versionJson.arguments.jvm, ctx));
   } else {
-    // 1.12 及更早：JVM 参数要自己拼
     jvm.push(`-Djava.library.path=${nativesDir}`, '-cp', classpath);
   }
 
@@ -140,7 +139,6 @@ export function buildCommand({ versionJson, instance, auth, javaPath, root, widt
   const jvmArgs = jvm.map((a) => substitute(a, vars));
   const gameArgs = game.map((a) => substitute(a, vars));
 
-  // 只对需要 Java 8 的老版本补 log4shell 防护
   if ((versionJson.javaVersion?.majorVersion || 8) <= 8) {
     jvmArgs.unshift('-Dlog4j2.formatMsgNoLookups=true');
   }

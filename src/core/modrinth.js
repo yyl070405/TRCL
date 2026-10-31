@@ -77,7 +77,6 @@ export async function installMod({ projectId, instance, onProgress = () => {}, d
   const file = pickFile(version);
   if (!file) throw new Error('该版本没有可下载文件');
 
-  // 同名文件已存在则跳过
   if (manifest.files[file.filename]) {
     onProgress({ phase: 'mods', label: `已安装 ${file.filename}` });
     return [];

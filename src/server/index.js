@@ -329,7 +329,6 @@ const server = http.createServer(async (req, res) => {
     return json(res, 405, { error: '不支持的方法' });
   }
 
-  // 屏幕截图返回二进制，不走 JSON 路由
   if (pathname === '/api/screen' && req.method === 'GET') {
     if (!screenAvailable()) return json(res, 503, { error: '当前环境没有可截取的显示器' });
     try {

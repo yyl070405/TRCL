@@ -75,7 +75,6 @@ public final class Downloader {
         if (task.sha1 != null) {
             String got = sha1(part.toPath());
             if (!task.sha1.equalsIgnoreCase(got)) {
-                //noinspection ResultOfMethodCallIgnored
                 part.delete();
                 throw new IOException("SHA1 不匹配: " + task.url);
             }

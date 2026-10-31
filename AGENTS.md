@@ -35,7 +35,6 @@ node src/cli.js help
 
 未完成：**Android APK 的 JRE/LWJGL/GL 转译/启动桥**（见 `mc-launcher/android-app/README.md`）。
 
-下一步优先级见 `HANDOFF.md`。
 
 ## 环境坑（都踩过）
 

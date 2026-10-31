@@ -56,12 +56,13 @@ mc-data/             实测数据（654MB）
 - 停止游戏偶发留下占存档锁的进程，已改为轮询 6 秒后 SIGKILL，但未做大规模复测。
 - `accounts.json` 明文存 token（当前只有离线账号）。
 
-## 接手后建议顺序
+## 验证命令
 
-1. 跑 `npm test` + `cd mc-launcher && npm start`，确认环境正常
-2. 需要桌面安装包：`npm install && npm run dist`
-3. Android：先让 CI 出 APK，验证「补全 + 微软登录」，再动运行时
-4. 运行时从 JRE 开始：选一个 bionic 版 JRE，解压到 app 私有目录，先跑 `java -version`，再接 LWJGL
+```bash
+cd mc-launcher && npm test
+cd android-app && javac --release 8 -cp libs/gson-2.11.0.jar -d /tmp/mc-core $(ls core/src/main/java/dev/mclauncher/core/*.java) core/src/test/java/dev/mclauncher/core/*.java && java -cp /tmp/mc-core:libs/gson-2.11.0.jar dev.mclauncher.core.CoreSelfTest
+```
+
 
 ## 环境
 

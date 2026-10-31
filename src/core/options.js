@@ -97,7 +97,6 @@ export function mergeOptions(text, patch) {
     const value = patch[key];
     if (value !== null && value !== undefined) out.push(`${key}:${value}`);
   }
-  // 去掉尾部空行
   while (out.length && out[out.length - 1] === '') out.pop();
   return out.join('\n') + '\n';
 }
