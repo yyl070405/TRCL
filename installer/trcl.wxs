@@ -22,7 +22,7 @@
       </Directory>
     </Directory>
 
-    <Feature Id="Main" Title="TRCL" Level="1" Display="expand" AllowAbsent="no">
+    <Feature Id="Main" Title="TRCL" Level="1">
       <ComponentGroupRef Id="AppFiles" />
     </Feature>
   </Product>
