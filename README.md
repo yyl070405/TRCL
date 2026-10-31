@@ -90,6 +90,22 @@ node src/cli.js pack https://cdn.modrinth.com/data/xxx/versions/yyy/pack.mrpack
 
 所有命令支持 `--dir=/自定义/数据目录`。
 
+## 导出实例
+
+把已安装的实例导出成其他启动器能导入的包：
+
+| 格式 | 可导入的启动器 |
+| --- | --- |
+| Modrinth `.mrpack` | Prism、Modrinth App、HMCL |
+| Prism / MultiMC `.zip` | Prism、MultiMC |
+
+```bash
+node src/cli.js export 生存 --format=mrpack
+node src/cli.js export 生存 --format=multimc --saves=true
+```
+
+界面里点「导出实例」也可以。导出内容只包含 `mods/`、`config/`、`options.txt`（可选存档），版本文件和资源由目标启动器自己安装。
+
 ## 数据目录
 
 默认位置：

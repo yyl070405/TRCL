@@ -9,6 +9,7 @@ import { chooseJava, findJavas, installJre, probeJava } from './core/java.js';
 import { buildCommand, launch as spawnLaunch, requiredJavaMajor } from './core/launch.js';
 import { installLoader } from './core/loaders.js';
 import { ensureLanguage, readOptions, updateOptions, LANGUAGES } from './core/options.js';
+import { exportInstance as exportToFile } from './core/export.js';
 import { inputAvailable } from './core/input.js';
 import { screenAvailable } from './core/screen.js';
 
@@ -266,6 +267,11 @@ export class LauncherApp {
   async gameOptions(instanceId) {
     const instance = await this.instances.get(instanceId);
     return readOptions(instance.dir);
+  }
+
+  async exportInstance(instanceId, { format = 'mrpack', includeSaves = false } = {}) {
+    const instance = await this.instances.get(instanceId);
+    return exportToFile({ instance, root: this.root, format, includeSaves });
   }
 
   async saveGameOptions(instanceId, patch) {

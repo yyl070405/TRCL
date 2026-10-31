@@ -106,6 +106,7 @@ function renderMain() {
         }
         <button class="secondary" id="repairBtn">检查文件</button>
         <button class="secondary" id="gameSettingsBtn">游戏设置</button>
+        <button class="secondary" id="exportBtn">导出实例</button>
         ${state.data.capabilities?.input ? '<button class="secondary" id="hudBtn">HUD 触屏</button>' : ''}
         <select id="memSel" style="width:auto" title="最大内存">
           ${[1024, 2048, 4096, 6144, 8192].map((m) => `<option value="${m}" ${m === inst.memoryMb ? 'selected' : ''}>${m / 1024} GB 内存</option>`).join('')}
@@ -131,6 +132,7 @@ function renderMain() {
   $('#stopBtn')?.addEventListener('click', () => stop(inst.id));
   $('#repairBtn')?.addEventListener('click', () => installInstance(inst.id));
   $('#gameSettingsBtn')?.addEventListener('click', () => openGameSettings(inst));
+  $('#exportBtn')?.addEventListener('click', () => openExport(inst));
   $('#hudBtn')?.addEventListener('click', () => window.openHud(inst.id));
   $('#deleteBtn')?.addEventListener('click', () => removeInstance(inst));
   $('#memSel')?.addEventListener('change', async (e) => {
@@ -290,6 +292,43 @@ async function installInstance(id) {
   } catch (e) {
     toast(e.message, 'error');
   }
+}
+
+async function openExport(inst) {
+  const body = `
+    <div class="field"><label>导出格式</label>
+      <select id="exFormat">
+        <option value="mrpack">Modrinth (.mrpack) — Prism / HMCL / Modrinth App</option>
+        <option value="multimc">Prism / MultiMC 实例 (.zip)</option>
+      </select>
+    </div>
+    <label class="hint" style="display:flex;gap:8px;align-items:center">
+      <input type="checkbox" id="exSaves" style="width:auto" /> 包含存档
+    </label>
+    <div class="hint" style="margin-top:8px">只导出实例的 mods、config、options.txt；版本和资源由目标启动器自行安装。</div>
+    <div class="modal-actions">
+      <button class="secondary" id="exCancel">取消</button>
+      <button class="primary" id="exGo">导出并下载</button>
+    </div>`;
+  modal('导出实例', body, (root) => {
+    root.querySelector('#exCancel').onclick = closeModal;
+    root.querySelector('#exGo').onclick = async () => {
+      try {
+        const r = await api(`/api/instances/${inst.id}/export`, {
+          method: 'POST',
+          body: {
+            format: root.querySelector('#exFormat').value,
+            includeSaves: root.querySelector('#exSaves').checked,
+          },
+        });
+        closeModal();
+        toast(`已导出 ${(r.size / 1024).toFixed(1)} KB`);
+        window.location.href = `/api/exports/${encodeURIComponent(r.name)}`;
+      } catch (e) {
+        toast(e.message, 'error');
+      }
+    };
+  });
 }
 
 async function openGameSettings(inst) {

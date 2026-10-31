@@ -186,6 +186,13 @@ route('POST', '/api/instances/:id/launch', async (_req, body, params) => {
   return { jobId: job.id };
 });
 
+route('POST', '/api/instances/:id/export', async (_req, body, params) => {
+  return app.exportInstance(params.id, {
+    format: body.format || 'mrpack',
+    includeSaves: body.includeSaves === true,
+  });
+});
+
 route('GET', '/api/instances/:id/options', async (_req, _body, params) => {
   const data = await app.gameOptions(params.id);
   return data;

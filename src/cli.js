@@ -119,6 +119,17 @@ try {
       for (const h of r.hits) console.log(`${h.title}  (${h.slug})  ↓${h.downloads}\n  ${h.description}`);
       break;
     }
+    case 'export': {
+      const inst = (await app.instances.list()).find((i) => i.id === positional[0] || i.name === positional[0]);
+      if (!inst) throw new Error('找不到实例');
+      const r = await app.exportInstance(inst.id, {
+        format: opts.format || 'mrpack',
+        includeSaves: Boolean(opts.saves),
+      });
+      console.log(`已导出 ${r.format}: ${r.file}`);
+      console.log(`${(r.size / 1024).toFixed(1)} KB，${r.entries} 个文件`);
+      break;
+    }
     case 'pack': {
       const url = positional[0];
       if (!url) throw new Error('需要 .mrpack 链接');

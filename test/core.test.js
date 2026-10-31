@@ -7,6 +7,9 @@ import { buildClasspath, buildCommand, tokenizeArgs } from '../src/core/launch.j
 import { applyArchCompat, ARM64_NATIVE_SUPPORT } from '../src/core/install.js';
 import { ensureLanguage, mcLang, mergeOptions } from '../src/core/options.js';
 import { mergeVersions } from '../src/core/meta.js';
+import { createZip } from '../src/core/zip-write.js';
+import { readZipEntries, readEntryData } from '../src/core/zip.js';
+import { mrpackIndex, mmcPack } from '../src/core/export.js';
 import { matchesRules, defaultRuleContext } from '../src/core/rules.js';
 import { mavenPath, offlineUuid, slugify } from '../src/core/util.js';
 
@@ -234,4 +237,29 @@ test('首次启动自动写语言且不覆盖已有选择', async () => {
   const second = await ensureLanguage(dir, 'en-US');
   assert.equal(second.changed, false);
   assert.equal(second.lang, 'zh_cn');
+});
+
+test('ZIP 写入后可被读取', () => {
+  const zip = createZip(new Map([
+    ['a.txt', 'hello'],
+    ['dir/b.json', JSON.stringify({ ok: true })],
+  ]));
+  const entries = readZipEntries(zip);
+  assert.equal(entries.length, 2);
+  const a = entries.find((e) => e.name === 'a.txt');
+  assert.equal(readEntryData(zip, a).toString('utf8'), 'hello');
+});
+
+test('mrpack 清单包含加载器依赖', () => {
+  const index = mrpackIndex({ name: '测试', mcVersion: '1.21.4', loaderType: 'fabric', loaderVersion: '0.20.1' });
+  assert.equal(index.dependencies.minecraft, '1.21.4');
+  assert.equal(index.dependencies['fabric-loader'], '0.20.1');
+  assert.equal(index.formatVersion, 1);
+});
+
+test('MultiMC 清单包含原版与加载器组件', () => {
+  const pack = mmcPack({ mcVersion: '1.20.1', loaderType: 'forge', loaderVersion: '47.2.0' });
+  assert.equal(pack.components[0].uid, 'net.minecraft');
+  assert.equal(pack.components[1].uid, 'net.minecraftforge');
+  assert.equal(pack.components[1].version, '47.2.0');
 });
