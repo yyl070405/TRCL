@@ -110,14 +110,34 @@ export async function extractTarGz(archivePath, destDir) {
       name = longName;
       longName = null;
     }
+    const mode = parseInt(header.toString('utf8', 100, 108).replace(/\0.*$/, '').trim(), 8) || 0o644;
     const dataOff = off + 512;
     if (type === 'L') {
       longName = buf.toString('utf8', dataOff, dataOff + size).replace(/\0.*$/, '');
+    } else if (type === '2') {
+      // 符号链接：目标必须在解压目录内
+      const linkTarget = header.toString('utf8', 157, 257).replace(/\0.*$/, '');
+      const linkPath = safeJoin(destDir, name);
+      safeJoin(destDir, path.relative(destDir, path.resolve(path.dirname(linkPath), linkTarget)));
+      await ensureDir(path.dirname(linkPath));
+      await fsp.rm(linkPath, { force: true });
+      await fsp.symlink(linkTarget, linkPath);
+      files++;
+    } else if (type === '1') {
+      // 硬链接：源文件按同包内路径解析
+      const linkTarget = header.toString('utf8', 157, 257).replace(/\0.*$/, '');
+      const linkPath = safeJoin(destDir, name);
+      await ensureDir(path.dirname(linkPath));
+      await fsp.link(safeJoin(destDir, linkTarget), linkPath);
+      files++;
+    } else if (type === '5') {
+      await ensureDir(safeJoin(destDir, name));
     } else if (type === '0' || type === '\0' || type === '7') {
       if (!name.endsWith('/')) {
         const target = safeJoin(destDir, name);
         await ensureDir(path.dirname(target));
         await fsp.writeFile(target, buf.subarray(dataOff, dataOff + size));
+        if (mode & 0o111) await fsp.chmod(target, mode & 0o777);
         files++;
       }
     }

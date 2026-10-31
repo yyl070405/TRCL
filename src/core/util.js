@@ -44,6 +44,30 @@ export async function statSafe(p) {
   }
 }
 
+const JAVA_BIN = isWindows ? 'java.exe' : 'java';
+
+/** 在解压目录里找 java.home（最多 3 层）。 */
+export async function findJavaHome(dir, depth = 0) {
+  if (depth > 3) return null;
+  if (await exists(path.join(dir, 'bin', JAVA_BIN))) return dir;
+  let entries = [];
+  try {
+    entries = await fsp.readdir(dir, { withFileTypes: true });
+  } catch {
+    return null;
+  }
+  for (const e of entries) {
+    if (!e.isDirectory()) continue;
+    const found = await findJavaHome(path.join(dir, e.name), depth + 1);
+    if (found) return found;
+  }
+  return null;
+}
+
+export function javaBinOf(home) {
+  return path.join(home, 'bin', JAVA_BIN);
+}
+
 export async function readJson(file, fallback = null) {
   try {
     return JSON.parse(await fsp.readFile(file, 'utf8'));

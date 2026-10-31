@@ -544,11 +544,10 @@ function openSettings() {
         ${javas.map((j) => `<option value="${esc(j.path)}" ${s.javaPath === j.path ? 'selected' : ''}>Java ${esc(j.major)} (${esc(j.version)})</option>`).join('')}
       </select>
       <div class="hint" style="margin-top:6px">检测到 ${javas.length} 个 Java。缺 Java 时可一键下载：</div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="mini" data-jre="21">下载 Java 21</button>
-        <button class="mini" data-jre="17">下载 Java 17</button>
-        <button class="mini" data-jre="8">下载 Java 8</button>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+        ${[25, 21, 17, 11, 8].map((v) => `<button class="mini" data-jre="${v}">Java ${v}</button>`).join('')}
       </div>
+      <div class="hint" style="margin-top:6px">下载 Zulu JRE，解压到数据目录 runtime/。启动时缺对应版本也会自动下载。</div>
     </div>
     <div class="field"><label>微软登录 client id（可选）</label>
       <input id="stMs" value="${esc(s.msClientId || '')}" placeholder="Azure 应用 ID，用于正版登录" />

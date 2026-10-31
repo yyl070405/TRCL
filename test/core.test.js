@@ -8,10 +8,11 @@ import { applyArchCompat, ARM64_NATIVE_SUPPORT } from '../src/core/install.js';
 import { ensureLanguage, mcLang, mergeOptions } from '../src/core/options.js';
 import { mergeVersions } from '../src/core/meta.js';
 import { createZip } from '../src/core/zip-write.js';
-import { readZipEntries, readEntryData } from '../src/core/zip.js';
+import { readZipEntries, readEntryData, extractTarGz } from '../src/core/zip.js';
 import { mrpackIndex, mmcPack } from '../src/core/export.js';
 import { matchesRules, defaultRuleContext } from '../src/core/rules.js';
 import { mavenPath, offlineUuid, slugify } from '../src/core/util.js';
+import { pickZuluPackage, zuluQuery, zuluTarget } from '../src/core/zulu.js';
 
 const baseVersion = {
   id: '1.20.1',
@@ -262,4 +263,50 @@ test('MultiMC 清单包含原版与加载器组件', () => {
   assert.equal(pack.components[0].uid, 'net.minecraft');
   assert.equal(pack.components[1].uid, 'net.minecraftforge');
   assert.equal(pack.components[1].version, '47.2.0');
+});
+
+test('Zulu 平台映射按系统与架构', () => {
+  assert.deepEqual(zuluTarget('win32', 'x64'), { os: 'windows', arch: 'x64', archiveType: 'zip' });
+  assert.deepEqual(zuluTarget('darwin', 'arm64'), { os: 'macos', arch: 'aarch64', archiveType: 'tar.gz' });
+  assert.deepEqual(zuluTarget('linux', 'arm64'), { os: 'linux', arch: 'aarch64', archiveType: 'tar.gz' });
+});
+
+test('Zulu 查询串带版本、平台与包类型', () => {
+  const url = zuluQuery(25, zuluTarget('linux', 'arm64'), 'jre');
+  assert.match(url, /java_version=25/);
+  assert.match(url, /os=linux/);
+  assert.match(url, /arch=aarch64/);
+  assert.match(url, /java_package_type=jre/);
+  assert.match(url, /release_status=ga/);
+});
+
+test('Zulu 包选择排除 CRaC 与 musl，取最高版本', () => {
+  const target = zuluTarget('linux', 'x64');
+  const list = [
+    { name: 'zulu21.30.15-ca-jre21.0.2-linux_x64.tar.gz', download_url: 'u1', java_version: [21, 0, 2, 0, 0] },
+    { name: 'zulu21.40.17-ca-jre21.0.5-linux_x64.tar.gz', download_url: 'u2', java_version: [21, 0, 5, 0, 0] },
+    { name: 'zulu21.40.17-ca-crac-jre21.0.5-linux_x64.tar.gz', download_url: 'u3', java_version: [21, 0, 5, 0, 0] },
+    { name: 'zulu21.40.17-ca-jre21.0.5-linux_musl_x64.tar.gz', download_url: 'u4', java_version: [21, 0, 5, 0, 0] },
+    { name: 'zulu21.40.17-ca-jre21.0.5-win_x64.zip', download_url: 'u5', java_version: [21, 0, 5, 0, 0] },
+  ];
+  const pkg = pickZuluPackage(list, target);
+  assert.equal(pkg.download_url, 'u2');
+});
+
+test('tar 解压保留可执行位', async () => {
+  const { execFile } = await import('node:child_process');
+  const { promisify } = await import('node:util');
+  const dir = await fsp.mkdtemp(path.join(os.tmpdir(), 'trcl-tar-'));
+  await fsp.mkdir(path.join(dir, 'src', 'bin'), { recursive: true });
+  const javaFile = path.join(dir, 'src', 'bin', 'java');
+  await fsp.writeFile(javaFile, '#!/bin/sh\necho hi\n');
+  await fsp.chmod(javaFile, 0o755);
+  await fsp.writeFile(path.join(dir, 'src', 'readme.txt'), 'x');
+  await promisify(execFile)('tar', ['-czf', path.join(dir, 'a.tar.gz'), '-C', path.join(dir, 'src'), '.']);
+  const out = path.join(dir, 'out');
+  await extractTarGz(path.join(dir, 'a.tar.gz'), out);
+  const bin = path.join(out, 'bin', 'java');
+  assert.equal((await fsp.stat(bin)).mode & 0o111, 0o111);
+  assert.equal(await fsp.readFile(bin, 'utf8'), '#!/bin/sh\necho hi\n');
+  await fsp.rm(dir, { recursive: true, force: true });
 });

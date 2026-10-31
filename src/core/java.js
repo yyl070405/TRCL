@@ -3,7 +3,8 @@ import path from 'node:path';
 import os from 'node:os';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { downloadFile, ensureDir, exists, fetchJson, fetchText, formatBytes, isMac, isWindows, removeSafe } from './util.js';
+import { downloadFile, ensureDir, exists, fetchJson, fetchText, findJavaHome, formatBytes, isMac, isWindows, removeSafe } from './util.js';
+import { installZuluJava } from './zulu.js';
 import { extractTarGz, extractZip } from './zip.js';
 
 const execFileAsync = promisify(execFile);
@@ -143,28 +144,8 @@ async function pickArchive(baseUrl, platform) {
   return sorted.find((n) => (wantZip ? n.endsWith('.zip') : n.endsWith('.tar.gz'))) || sorted[0];
 }
 
-async function findJavaHome(dir, depth = 0) {
-  if (depth > 3) return null;
-  const direct = path.join(dir, 'bin', JAVA_BIN);
-  if (await exists(direct)) return dir;
-  let entries = [];
-  try {
-    entries = await fsp.readdir(dir, { withFileTypes: true });
-  } catch {
-    return null;
-  }
-  for (const e of entries) {
-    if (!e.isDirectory()) continue;
-    const found = await findJavaHome(path.join(dir, e.name), depth + 1);
-    if (found) return found;
-  }
-  return null;
-}
-
-/**
- * 从清华 Adoptium 镜像下载并解压指定大版本 JRE（Windows/macOS/Linux 都支持）。
- */
-export async function installJre(major, { root, onProgress = () => {} }) {
+/** 从清华 Adoptium 镜像下载并解压指定大版本 JRE（Zulu 失败时的后备）。 */
+async function installAdoptiumJre(major, { root, onProgress = () => {} }) {
   const { base, arch, platform } = adoptiumUrl(major);
   const target = path.join(root, 'runtime', `jre-${major}-${platform}-${arch}`);
   const existing = path.join(target, 'bin', JAVA_BIN);
@@ -217,6 +198,23 @@ export async function installJre(major, { root, onProgress = () => {} }) {
   if (!info) throw new Error('Java 安装完成但无法执行');
   onProgress({ phase: 'jre', label: `Java ${info.version} 就绪`, done: 1, total: 1 });
   return info;
+}
+
+/**
+ * 下载游戏所需的 Java。优先 Zulu（8–25 都有 JRE/JDK，覆盖 Minecraft 全部需求），
+ * 失败再退回 Adoptium 镜像。返回 probeJava 的结果。
+ */
+export async function installJre(major, { root, onProgress = () => {}, packageType = 'jre' } = {}) {
+  try {
+    const { bin } = await installZuluJava(major, { root, onProgress, packageType });
+    const info = await probeJava(bin);
+    if (!info) throw new Error('Zulu 运行时解压后无法执行');
+    onProgress({ phase: 'jre', label: `Java ${info.version}（Zulu）就绪`, done: 1, total: 1 });
+    return info;
+  } catch (zuluError) {
+    onProgress({ phase: 'jre', label: `Zulu 不可用（${zuluError.message}），改试 Adoptium…` });
+    return installAdoptiumJre(major, { root, onProgress });
+  }
 }
 
 async function sizeOf(url) {

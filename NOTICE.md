@@ -68,6 +68,7 @@ README 中提到的 HMCL / PCL 仅表示产品形态与交互思路上的参照�
 
 | 组件 | 许可 |
 | --- | --- |
+| Azul Zulu JDK/JRE（按需下载，不分发） | GPL-2.0-with-classpath-exception |
 | Android JRE（Pojav 构建） | GPL-2.0-with-classpath-exception |
 | LWJGL | BSD-3-Clause |
 | MobileGlues | LGPL-2.1 |

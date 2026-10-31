@@ -15,7 +15,7 @@
 ```bash
 cd mc-launcher
 npm start          # http://127.0.0.1:34120，零依赖，不用 npm install
-npm test           # node --test，17 项
+npm test           # node --test，23 项
 node src/cli.js help
 ```
 
@@ -55,7 +55,7 @@ node src/cli.js help
 | `src/core/options.js` | options.txt 读写、语言映射 |
 | `src/core/input.js` | HUD 按键注入（xdotool） |
 | `src/core/screen.js` | 截图预览 |
-| `src/core/meta.js` / `java.js` / `auth.js` / `loaders.js` | 元数据、JRE、微软登录、加载器 |
+| `src/core/meta.js` / `java.js` / `zulu.js` / `auth.js` / `loaders.js` | 元数据、Java 探测、Zulu 运行时下载、微软登录、加载器 |
 | `src/app.js` | 应用层（安装/启动/快照/设置） |
 | `src/server/index.js` | HTTP API + 静态 UI |
 | `ui/app.js` / `ui/hud.js` | 界面 |
