@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
-import { ensureDir, exists, fetchJson, readJson, writeJson } from './util.js';
+import { CACHE_HOME, ensureDir, exists, fetchJson, readJson, writeJson } from './util.js';
 
 const OFFICIAL = {
   manifest: 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json',
@@ -27,7 +27,7 @@ export class MinecraftMeta {
     this.source = SOURCES[mirror] || OFFICIAL;
     this.shared = path.join(root, 'shared');
     this.versionsDir = path.join(this.shared, 'versions');
-    this.cacheDir = path.join(root, 'cache');
+    this.cacheDir = path.join(CACHE_HOME, 'meta');
     this._manifest = null;
     this._manifestAt = 0;
   }

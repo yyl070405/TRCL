@@ -3,3 +3,4 @@ dist/
 mc-data/
 *.log
 .DS_Store
+TRCL-data/

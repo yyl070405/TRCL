@@ -5,6 +5,24 @@ const { spawn } = require('node:child_process');
 
 const PORT = 34000 + Math.floor(Math.random() * 1000);
 const ICON = path.join(__dirname, '..', 'ui', 'icon-512.png');
+const fs = require('node:fs');
+
+/**
+ * 数据目录放在启动器自己的文件夹：<程序目录>/data。
+ * 只有装到没有写权限的位置（比如 Program Files）才退回 AppData。
+ */
+function resolveDataDir() {
+  if (process.env.MC_LAUNCHER_HOME) return process.env.MC_LAUNCHER_HOME;
+  const base = app.isPackaged ? path.dirname(app.getPath('exe')) : path.join(__dirname, '..');
+  const wanted = path.join(base, 'data');
+  try {
+    fs.mkdirSync(wanted, { recursive: true });
+    fs.accessSync(wanted, fs.constants.W_OK);
+    return wanted;
+  } catch {
+    return path.join(app.getPath('userData'), 'data');
+  }
+}
 let server = null;
 let win = null;
 
@@ -42,7 +60,13 @@ function waitForServer(url, tries = 100) {
 async function startServer() {
   const serverPath = path.join(__dirname, '..', 'src', 'server', 'index.js');
   server = spawn(process.execPath, [serverPath], {
-    env: { ...process.env, ELECTRON_RUN_AS_NODE: '1', PORT: String(PORT), HOST: '127.0.0.1' },
+    env: {
+      ...process.env,
+      ELECTRON_RUN_AS_NODE: '1',
+      PORT: String(PORT),
+      HOST: '127.0.0.1',
+      MC_LAUNCHER_HOME: resolveDataDir(),
+    },
     stdio: ['ignore', 'pipe', 'pipe'],
     windowsHide: true,
   });

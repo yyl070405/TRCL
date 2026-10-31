@@ -11,7 +11,7 @@ import { createZip } from '../src/core/zip-write.js';
 import { readZipEntries, readEntryData, extractTarGz } from '../src/core/zip.js';
 import { mrpackIndex, mmcPack } from '../src/core/export.js';
 import { matchesRules, defaultRuleContext } from '../src/core/rules.js';
-import { mavenPath, offlineUuid, slugify } from '../src/core/util.js';
+import { mavenPath, offlineUuid, resolveCacheHome, resolveHome, slugify } from '../src/core/util.js';
 import { standardJavaDirs } from '../src/core/java.js';
 import { pickZuluPackage, zuluQuery, zuluTarget } from '../src/core/zulu.js';
 import { isArchiveMagic, oracleTarget, parseOracleLinks, pickOraclePackage } from '../src/core/oracle.js';
@@ -367,4 +367,23 @@ test('macOS 与 Linux 的 Java 搜索目录', () => {
   assert.ok(mac.includes('/Library/Java/JavaVirtualMachines'));
   const linux = standardJavaDirs({ platform: 'linux', home: '/home/me' });
   assert.ok(linux.includes('/usr/lib/jvm'));
+});
+
+test('数据目录默认在启动器文件夹，只有可覆盖项才外置', () => {
+  assert.equal(resolveHome({ env: { MC_LAUNCHER_HOME: '/x/data' }, platform: 'linux', cwd: '/app' }), '/x/data');
+  assert.equal(
+    resolveHome({ env: { TRCL_PORTABLE: '1' }, platform: 'win32', execPath: 'D:\\Games\\TRCL\\TRCL.exe', cwd: 'C:\\x' }),
+    path.win32.join('D:\\Games\\TRCL', 'data'),
+  );
+  assert.equal(resolveHome({ platform: 'win32', cwd: 'C:\\Games\\TRCL' }), path.win32.join('C:\\Games\\TRCL', 'data'));
+  assert.equal(resolveHome({ platform: 'linux', cwd: '/opt/trcl' }), '/opt/trcl/data');
+});
+
+test('缓存目录走系统缓存位置', () => {
+  assert.equal(
+    resolveCacheHome({ platform: 'win32', env: { LOCALAPPDATA: 'C:\\Local' } }),
+    path.win32.join('C:\\Local', 'TRCL', 'cache'),
+  );
+  assert.equal(resolveCacheHome({ platform: 'linux', env: { XDG_CACHE_HOME: '/c' } }), '/c/trcl');
+  assert.equal(resolveCacheHome({ platform: 'darwin', home: '/Users/me' }), '/Users/me/Library/Caches/TRCL');
 });

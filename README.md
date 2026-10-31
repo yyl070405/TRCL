@@ -105,15 +105,18 @@ node src/cli.js export 生存 --format=multimc --saves=true
 
 ## 数据目录
 
-默认位置：
+原则：**游戏文件、下载内容、日志、账号全部放在启动器自己的文件夹**，不往用户目录里散落文件；只有可以随时重建的缓存放系统缓存目录（C 盘的例外项）。
 
-| 平台 | 路径 |
+| 位置 | 路径 |
 | --- | --- |
-| Windows | `%APPDATA%\MCLauncher` |
-| macOS | `~/Library/Application Support/MCLauncher` |
-| Linux | `~/.local/share/mc-launcher` |
+| 数据 | `<启动器目录>/data`（Windows 安装版是 `%LOCALAPPDATA%\Programs\TRCL\data`） |
+| 缓存 | Windows `%LOCALAPPDATA%\TRCL\cache`；macOS `~/Library/Caches/TRCL`；Linux `~/.cache/trcl` |
 
-可用环境变量 `MC_LAUNCHER_HOME` 覆盖。目录结构：
+- `MC_LAUNCHER_HOME` 改数据目录，`MC_LAUNCHER_CACHE` 改缓存目录
+- 便携模式：程序旁边放一个空的 `portable.txt`，数据固定写 `<程序目录>/data`
+- 装到没有写权限的位置（例如选定 `C:\Program Files`）才会退回 AppData，其余情况都在启动器目录内
+
+目录结构：
 
 ```
 <root>/
@@ -126,9 +129,10 @@ node src/cli.js export 生存 --format=multimc --saves=true
   instances/<id>/        # 每个实例一个 gameDir
     instance.json
     mods/ saves/ logs/ natives/
-  runtime/               # 自动下载的 Java 运行时（Zulu）
-  cache/                 # 版本清单、安装器缓存
+  runtime/               # 自动下载的 Java 运行时（Zulu / Oracle），按大版本分目录
 ```
+
+缓存（版本清单等）在系统缓存目录，不在上面这棵树里。
 
 ## 微软登录
 
@@ -272,6 +276,17 @@ npm test
 ## 功能状态
 
 已实现与未实现的功能清单见 [docs/STATUS.md](docs/STATUS.md)，只记录核实过的状态。
+
+## 不做的事
+
+启动器只做启动游戏这一件事，不夹带其他东西：
+
+- 不写注册表，卸载时只删自己的卸载项；不设开机自启、不装服务/驱动/计划任务
+- 不捆绑第三方软件、不改浏览器主页和搜索、不弹广告
+- 不收集使用数据、不上传日志、不做静默联网（除下载游戏与需要的运行时）
+- 卸载不删 `data` 目录，存档和实例留着；要清干净自己删文件夹即可
+- 下载只走官方渠道：Mojang、Fabric/Quilt/Forge/NeoForge、Modrinth、Maven Central、Azul Zulu、Oracle
+- 下载的文件与生成的日志都写在启动器目录内，位置见上一节
 
 ## 许可证与声明
 

@@ -23,6 +23,8 @@ node src/cli.js help
 
 ## 必须知道的约定
 
+- **数据只放启动器目录**：默认 `<程序目录>/data`（`MC_LAUNCHER_HOME` 可覆盖），缓存才写系统缓存目录（`%LOCALAPPDATA%\TRCL\cache` / `~/.cache/trcl`）。不往用户目录散文件，不写注册表。
+
 - **零运行时依赖**：不要为了小功能引 npm 包；Node 内置模块优先。Electron/electron-builder 只放 devDependencies。
 - UI 是原生 HTML/CSS/JS，无框架、无构建步骤；`ui/app.js` 是主逻辑，`ui/hud.js` 是触屏 HUD。
 - 许可 **GPL-3.0-or-later**。引入 GPL 代码（如 PojavLauncher）时保留声明并公开源码。

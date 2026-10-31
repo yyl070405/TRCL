@@ -11,17 +11,38 @@ export const isMac = process.platform === 'darwin';
 export const USER_AGENT = 'TRCL/0.1 (+https://github.com/yyl070405/TRCL)';
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-function defaultHome() {
-  if (isWindows) {
-    const appdata = process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming');
-    return path.join(appdata, 'MCLauncher');
+/**
+ * 数据目录（纯函数）。原则：游戏、下载、日志全放启动器自己的文件夹，
+ * 不往用户目录里散落文件；只有缓存放系统缓存目录（C 盘例外项）。
+ * 顺序：MC_LAUNCHER_HOME > portable.txt/TRCL_PORTABLE > <程序目录>/data。
+ */
+export function resolveHome({ env = process.env, platform = process.platform, home = os.homedir(), execPath = process.execPath, cwd = process.cwd(), portableFile = false } = {}) {
+  const P = platform === 'win32' ? path.win32 : path;
+  if (env.MC_LAUNCHER_HOME) return env.MC_LAUNCHER_HOME;
+  if (env.TRCL_PORTABLE || portableFile) return P.join(P.dirname(execPath), 'data');
+  return P.join(cwd, 'data');
+}
+
+/** 缓存目录（纯函数）：只有这里会写到用户目录 / C 盘。 */
+export function resolveCacheHome({ env = process.env, platform = process.platform, home = os.homedir() } = {}) {
+  const P = platform === 'win32' ? path.win32 : path;
+  if (env.MC_LAUNCHER_CACHE) return env.MC_LAUNCHER_CACHE;
+  if (platform === 'win32') return P.join(env.LOCALAPPDATA || P.join(home, 'AppData', 'Local'), 'TRCL', 'cache');
+  if (platform === 'darwin') return P.join(home, 'Library', 'Caches', 'TRCL');
+  return P.join(env.XDG_CACHE_HOME || P.join(home, '.cache'), 'trcl');
+}
+
+function hasPortableMarker() {
+  try {
+    return fs.existsSync(path.join(path.dirname(process.execPath), 'portable.txt'));
+  } catch {
+    return false;
   }
-  if (isMac) return path.join(os.homedir(), 'Library', 'Application Support', 'MCLauncher');
-  return path.join(process.env.XDG_DATA_HOME || path.join(os.homedir(), '.local', 'share'), 'mc-launcher');
 }
 
 /** Root data dir. Override with MC_LAUNCHER_HOME. */
-export const HOME = process.env.MC_LAUNCHER_HOME || defaultHome();
+export const HOME = resolveHome({ portableFile: hasPortableMarker() });
+export const CACHE_HOME = resolveCacheHome();
 
 export async function ensureDir(dir) {
   await fsp.mkdir(dir, { recursive: true });

@@ -66,10 +66,7 @@
     }
   },
   "main": "electron/main.cjs",
-  "author": {
-    "name": "yyl070405",
-    "email": "yyl070405@users.noreply.github.com"
-  },
+  "author": "yyl070405 <yyl070405@users.noreply.github.com>",
   "devDependencies": {
     "electron": "^33.4.11",
     "electron-builder": "^26.18.0"
