@@ -12,7 +12,7 @@
 - 原版版本安装：client jar、libraries、natives、assets、log4j 配置，带 SHA1 校验、断点重下、并发下载
 - 版本 JSON 继承链合并（`inheritsFrom`），兼容 Fabric / Quilt 的 profile 格式
 - 启动参数拼装：新旧两套 `arguments` / `minecraftArguments`、规则（os/arch/features）、变量替换、classpath、natives 解压
-- Java 检测（PATH / JAVA_HOME / 常见安装目录 / 自带 runtime）与**自动下载运行时**：Zulu JDK/JRE 8–25，Windows / macOS / Linux 的 x64、arm64 都覆盖；启动时缺对应版本会自动下载，设置里也能手动装
+- Java 检测（PATH / JAVA_HOME / 常见安装目录 / 自带 runtime）与**自动下载运行时**：Zulu JDK/JRE 8–25（Win/mac/Linux × x64/arm64），可选 Oracle 官方 JDK（只对最新版有匿名直链，其余自动退回 Zulu）；启动时缺对应版本自动下载
 - 账号：离线登录、微软设备码登录（Xbox → XSTS → Minecraft Services）、账号切换与持久化
 - 加载器：Fabric、Quilt（meta API 直接生成版本 JSON）、Forge、NeoForge（调用官方 installer）
 - 实例：隔离的 gameDir、内存/窗口/JVM 参数、多实例切换

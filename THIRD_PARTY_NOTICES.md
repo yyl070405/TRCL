@@ -8,6 +8,7 @@
 | Electron | MIT | 桌面外壳 |
 | electron-builder | MIT | 打包 |
 | Azul Zulu JDK/JRE | GPL-2.0-with-classpath-exception | 运行时，由用户选择下载，不随安装包分发 |
+| Oracle JDK/JRE | Oracle No-Fee Terms（NFTC）/ OTN 许可，非 GPL | 可选运行时，由用户选择后从 oracle.com 下载，不随安装包分发、不再分发 |
 | 本项目自身代码 | GPL-3.0-or-later | — |
 
 这些依赖都以独立进程或库的形式使用，未修改其源码。

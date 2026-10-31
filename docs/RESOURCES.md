@@ -30,6 +30,20 @@
 
 **踩过的坑**：原来的 tar 解压只写文件内容、不还原权限位，JRE 装好后 `bin/java` 没有执行权限。现在按 tar 头的 mode 还原可执行位，并处理符号链接、硬链接。
 
+## 甲骨文（Oracle）官方 JDK
+
+设置里可以选「Oracle 官方」作为 Java 下载源（默认是 Zulu）。
+
+- 页面：`https://www.oracle.com/java/technologies/downloads/`，解析页面里的 `download.oracle.com/...` 链接
+- 新版本走 `/java/<大版本>/latest/jdk-<大版本>_<os>-<arch>_bin.<ext>`，这是唯一稳定的匿名直链
+- 老版本（8/11/17/21）走 `otn/java/jdk/<版本>+<构建>/<hash>/jdk-...`，实测 302 到 `edelivery.oracle.com` 后返回 7.6 KB 的登录页 HTML，**拿不到安装包**
+- 只发 JDK（Java 8 另有 JRE），包比 Zulu 的 JRE 大一半以上：JDK 21 linux-aarch64 约 210 MB
+
+所以实现上：先试 `latest` 直链和下载页解析出的链接，HEAD 校验必须是 200、非 `text/html`、体积大于 1 MB；下载完再验文件头（gzip `1f 8b` / zip `PK`），是登录页就报错。报错后下载链自动退回 Zulu，不会卡住启动。
+- 平台命名：`linux-x64` / `linux-aarch64` / `windows-x64` / `macos-x64` / `macos-aarch64`；Java 8 的包名是 `jdk-8u511-linux-x64.tar.gz`（版本号和平台之间是 `-`，且没有 `_bin`）
+
+**许可**：Oracle JDK 不是 GPL，按 Oracle 自己的许可（NFTC / OTN）使用。本项目**不打包、不再分发** Oracle JDK，只在用户选择后从 oracle.com 下载到本机。
+
 ## Android 运行时源（2026-11 核对）
 
 | 组件 | 版本 | 大小 | 直链 | SHA-256 |

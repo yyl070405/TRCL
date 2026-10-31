@@ -13,6 +13,7 @@ import { mrpackIndex, mmcPack } from '../src/core/export.js';
 import { matchesRules, defaultRuleContext } from '../src/core/rules.js';
 import { mavenPath, offlineUuid, slugify } from '../src/core/util.js';
 import { pickZuluPackage, zuluQuery, zuluTarget } from '../src/core/zulu.js';
+import { isArchiveMagic, oracleTarget, parseOracleLinks, pickOraclePackage } from '../src/core/oracle.js';
 
 const baseVersion = {
   id: '1.20.1',
@@ -309,4 +310,41 @@ test('tar 解压保留可执行位', async () => {
   assert.equal((await fsp.stat(bin)).mode & 0o111, 0o111);
   assert.equal(await fsp.readFile(bin, 'utf8'), '#!/bin/sh\necho hi\n');
   await fsp.rm(dir, { recursive: true, force: true });
+});
+
+test('Oracle 下载页解析出 jdk/jre 链接', () => {
+  const html = `
+    <a href="https://download.oracle.com/otn/java/jdk/21.0.13.0.3%2B1/abc/jdk-21.0.13.0.3_linux-aarch64_bin.tar.gz">x</a>
+    <a href="https://download.oracle.com/otn/java/jdk/8u511-b33/def/jre-8u511-linux-x64.tar.gz">y</a>
+    <a href="https://download.oracle.com/java/25/latest/jdk-25_windows-x64_bin.zip">z</a>`;
+  const links = parseOracleLinks(html);
+  assert.equal(links.length, 3);
+  assert.deepEqual(
+    links.map((l) => [l.kind, l.major, l.os, l.arch, l.ext]),
+    [
+      ['jdk', 21, 'linux', 'aarch64', 'tar.gz'],
+      ['jre', 8, 'linux', 'x64', 'tar.gz'],
+      ['jdk', 25, 'windows', 'x64', 'zip'],
+    ],
+  );
+});
+
+test('Oracle 选包优先 JRE，且匹配平台架构', () => {
+  const links = [
+    { kind: 'jdk', major: 17, version: '17.0.21.0.3', url: 'a', os: 'linux', arch: 'aarch64', ext: 'tar.gz' },
+    { kind: 'jre', major: 17, version: '17.0.2', url: 'b', os: 'linux', arch: 'aarch64', ext: 'tar.gz' },
+    { kind: 'jdk', major: 17, version: '17.0.21.0.3', url: 'c', os: 'linux', arch: 'x64', ext: 'tar.gz' },
+  ];
+  assert.equal(pickOraclePackage(links, oracleTarget('linux', 'arm64'), 17).url, 'b');
+  assert.equal(pickOraclePackage(links, oracleTarget('linux', 'x64'), 17).url, 'c');
+  assert.equal(pickOraclePackage(links, oracleTarget('darwin', 'arm64'), 17), null);
+});
+
+test('Oracle 下载结果校验：登录页不算安装包', () => {
+  const gz = Buffer.from([0x1f, 0x8b, 0x08, 0x00]);
+  const zip = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
+  const html = Buffer.from('<HTML>');
+  assert.equal(isArchiveMagic(gz, 'jdk-21_linux-aarch64_bin.tar.gz'), true);
+  assert.equal(isArchiveMagic(zip, 'jdk-21_windows-x64_bin.zip'), true);
+  assert.equal(isArchiveMagic(html, 'jdk-21_linux-aarch64_bin.tar.gz'), false);
 });

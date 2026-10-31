@@ -5,6 +5,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { downloadFile, ensureDir, exists, fetchJson, fetchText, findJavaHome, formatBytes, isMac, isWindows, removeSafe } from './util.js';
 import { installZuluJava } from './zulu.js';
+import { installOracleJava } from './oracle.js';
 import { extractTarGz, extractZip } from './zip.js';
 
 const execFileAsync = promisify(execFile);
@@ -201,20 +202,30 @@ async function installAdoptiumJre(major, { root, onProgress = () => {} }) {
 }
 
 /**
- * 下载游戏所需的 Java。优先 Zulu（8–25 都有 JRE/JDK，覆盖 Minecraft 全部需求），
- * 失败再退回 Adoptium 镜像。返回 probeJava 的结果。
+ * 下载游戏所需的 Java。默认 Zulu（8–25 都有 JRE/JDK），最后退 Adoptium 镜像；
+ * vendor 设为 'oracle' 时先试 Oracle 官方下载页。返回 probeJava 的结果。
  */
-export async function installJre(major, { root, onProgress = () => {}, packageType = 'jre' } = {}) {
-  try {
-    const { bin } = await installZuluJava(major, { root, onProgress, packageType });
-    const info = await probeJava(bin);
-    if (!info) throw new Error('Zulu 运行时解压后无法执行');
-    onProgress({ phase: 'jre', label: `Java ${info.version}（Zulu）就绪`, done: 1, total: 1 });
-    return info;
-  } catch (zuluError) {
-    onProgress({ phase: 'jre', label: `Zulu 不可用（${zuluError.message}），改试 Adoptium…` });
-    return installAdoptiumJre(major, { root, onProgress });
+export async function installJre(major, { root, onProgress = () => {}, packageType = 'jre', vendor = 'zulu' } = {}) {
+  const zulu = ['Zulu', () => installZuluJava(major, { root, onProgress, packageType })];
+  const oracle = ['Oracle', () => installOracleJava(major, { root, onProgress })];
+  const adoptium = ['Adoptium', () => installAdoptiumJre(major, { root, onProgress })];
+  const chain = vendor === 'oracle' ? [oracle, zulu, adoptium] : [zulu, oracle, adoptium];
+
+  let lastError;
+  for (const [name, run] of chain) {
+    try {
+      const result = await run();
+      if (result?.version) return result;
+      const info = await probeJava(result.bin);
+      if (!info) throw new Error('解压后无法执行');
+      onProgress({ phase: 'jre', label: `Java ${info.version}（${name}）就绪`, done: 1, total: 1 });
+      return info;
+    } catch (e) {
+      lastError = e;
+      onProgress({ phase: 'jre', label: `${name} 不可用：${e.message}` });
+    }
   }
+  throw lastError || new Error(`找不到 Java ${major} 的安装包`);
 }
 
 async function sizeOf(url) {

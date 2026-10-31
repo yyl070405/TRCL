@@ -17,6 +17,7 @@ const DEFAULT_SETTINGS = {
   mirror: 'official',
   msClientId: '',
   javaPath: '',
+  javaVendor: 'zulu',
   defaultMemoryMb: 2048,
   defaultWidth: 854,
   defaultHeight: 480,
@@ -104,7 +105,7 @@ export class LauncherApp {
     const { java, compatible } = chooseJava(list, major);
     if (java && compatible) return java;
     onProgress?.({ phase: 'jre', label: `下载 Java ${major}…` });
-    const info = await installJre(major, { root: this.root, onProgress });
+    const info = await installJre(major, { root: this.root, onProgress, vendor: this.settings.javaVendor });
     this._javaCache = null;
     return info;
   }
@@ -280,7 +281,7 @@ export class LauncherApp {
   }
 
   async installJreFor(major, onProgress) {
-    const info = await installJre(major, { root: this.root, onProgress });
+    const info = await installJre(major, { root: this.root, onProgress, vendor: this.settings.javaVendor });
     this._javaCache = null;
     return info;
   }

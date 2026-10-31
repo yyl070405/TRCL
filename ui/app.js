@@ -538,6 +538,13 @@ function openSettings() {
         <option value="bmclapi" ${s.mirror === 'bmclapi' ? 'selected' : ''}>BMCLAPI 镜像（国内加速，可能不稳）</option>
       </select>
     </div>
+    <div class="field"><label>Java 下载源</label>
+      <select id="stVendor">
+        <option value="zulu" ${s.javaVendor !== 'oracle' ? 'selected' : ''}>Zulu（推荐，8–25 都有 JRE）</option>
+        <option value="oracle" ${s.javaVendor === 'oracle' ? 'selected' : ''}>Oracle 官方（JDK，包大）</option>
+      </select>
+      <div class="hint" style="margin-top:6px">Oracle 只对最新版给匿名直链（当前 25/27），老版本要登录，会自动改用 Zulu。Oracle JDK 受其许可约束，本启动器不分发。</div>
+    </div>
     <div class="field"><label>默认 Java</label>
       <select id="stJava">
         <option value="">自动选择（推荐）</option>
@@ -576,6 +583,7 @@ function openSettings() {
           body: {
             mirror: root.querySelector('#stMirror').value,
             javaPath: root.querySelector('#stJava').value,
+            javaVendor: root.querySelector('#stVendor').value,
             msClientId: root.querySelector('#stMs').value.trim(),
             defaultMemoryMb: Number(root.querySelector('#stMem').value) || 2048,
             defaultWidth: Number(root.querySelector('#stW').value) || 854,
