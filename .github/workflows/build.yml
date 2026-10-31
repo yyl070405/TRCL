@@ -56,24 +56,25 @@ jobs:
           npx electron-builder --win --x64 --publish never 2>&1 | tee build-windows.log
       - name: 生成 MSI（WiX）
         shell: pwsh
+        # 失败不阻塞 exe 发布，日志会推到 ci-logs 分支
+        continue-on-error: true
         run: |
-          Start-Transcript -Path build-msi.log -Force | Out-Null
-          choco install wixtoolset --no-progress -y
-          $candidates = @(
-            'C:\Program Files (x86)\WiX Toolset v3.14\bin',
-            'C:\Program Files (x86)\WiX Toolset v3.11\bin',
-            'C:\Program Files\WiX Toolset v3.14\bin'
-          )
-          $wixBin = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
-          if (-not $wixBin) { throw '没有找到 WiX 3 的 bin 目录' }
-          $env:PATH = "$env:PATH;$wixBin"
+          $ErrorActionPreference = 'Continue'
+          $log = 'build-msi.log'
+          function Step([string]$label, [scriptblock]$block) {
+            "== $label" | Tee-Object -FilePath $log -Append
+            & $block 2>&1 | Tee-Object -FilePath $log -Append
+            if ($LASTEXITCODE -ne 0) { throw "$label 失败（退出码 $LASTEXITCODE）" }
+          }
+          Step 'download wix' { curl.exe -sSL -o wix314.zip https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip }
+          Expand-Archive wix314.zip -DestinationPath wix -Force
+          $wixBin = Join-Path $PWD 'wix'
           $ver = (Get-Content package.json -Raw | ConvertFrom-Json).version
-          $src = "$PWD\dist\win-unpacked"
-          & "$wixBin\heat.exe" dir $src -cg AppFiles -dr INSTALLFOLDER -gg -g1 -sfrag -srd -var var.SourceDir -out dist\files.wxs
-          & "$wixBin\candle.exe" -dSourceDir=$src -dVersion=$ver -dLicenseRtf="$PWD\installer\NOTICE.rtf" -out dist\product.wixobj installer\trcl.wxs
-          & "$wixBin\candle.exe" -dSourceDir=$src -out dist\files.wixobj dist\files.wxs
-          & "$wixBin\light.exe" -ext WixUIExtension dist\product.wixobj dist\files.wixobj -out "dist\TRCL-$ver-win-x64.msi"
-          Stop-Transcript | Out-Null
+          $src = Join-Path $PWD 'dist\win-unpacked'
+          Step 'heat' { & (Join-Path $wixBin 'heat.exe') dir $src -cg AppFiles -dr INSTALLFOLDER -gg -g1 -sfrag -srd -var var.SourceDir -out dist\files.wxs }
+          Step 'candle product' { & (Join-Path $wixBin 'candle.exe') -nologo -dSourceDir=$src -dVersion=$ver -dLicenseRtf="$PWD\installer\NOTICE.rtf" -out dist\product.wixobj installer\trcl.wxs }
+          Step 'candle files' { & (Join-Path $wixBin 'candle.exe') -nologo -dSourceDir=$src -out dist\files.wixobj dist\files.wxs }
+          Step 'light' { & (Join-Path $wixBin 'light.exe') -nologo -ext WixUIExtension dist\product.wixobj dist\files.wixobj -out "dist\TRCL-$ver-win-x64.msi" }
       - uses: actions/upload-artifact@v4
         with:
           name: windows-x64
