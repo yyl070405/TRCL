@@ -48,12 +48,19 @@
   },
   "main": "electron/main.cjs",
   "author": {
-    "name": "MC Launcher Contributors",
-    "email": "dev@example.com"
+    "name": "yyl070405",
+    "email": "yyl070405@users.noreply.github.com"
   },
   "devDependencies": {
     "electron": "^33.4.11",
     "electron-builder": "^26.18.0"
   },
-  "homepage": "https://github.com/mc-launcher/mc-launcher"
+  "homepage": "https://github.com/yyl070405/TRCL",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yyl070405/TRCL.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yyl070405/TRCL/issues"
+  }
 }

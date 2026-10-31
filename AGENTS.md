@@ -60,7 +60,7 @@ node src/cli.js help
 | `src/app.js` | 应用层（安装/启动/快照/设置） |
 | `src/server/index.js` | HTTP API + 静态 UI |
 | `ui/app.js` / `ui/hud.js` | 界面 |
-| `android-app/core/` | Java 核心（26 项自检） |
+| `android-app/core/` | Java 核心（28 项自检） |
 
 ## 验证方式
 
