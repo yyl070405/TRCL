@@ -180,7 +180,7 @@ export async function launch({ command, cwd, env, logsDir, onLine }) {
     cwd,
     env,
     stdio: ['ignore', 'pipe', 'pipe'],
-    windowsHide: false,
+    windowsHide: true,
   });
 
   const pump = (src, tag) => {

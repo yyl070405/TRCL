@@ -4,8 +4,23 @@ const http = require('node:http');
 const { spawn } = require('node:child_process');
 
 const PORT = 34000 + Math.floor(Math.random() * 1000);
+const ICON = path.join(__dirname, '..', 'ui', 'icon-512.png');
 let server = null;
 let win = null;
+
+if (process.platform === 'win32') app.setAppUserModelId('dev.mclauncher.app');
+
+// 第二个实例不再开窗口，直接聚焦已有窗口
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    if (!win) return;
+    if (win.isMinimized()) win.restore();
+    win.show();
+    win.focus();
+  });
+}
 
 function waitForServer(url, tries = 100) {
   return new Promise((resolve, reject) => {
@@ -45,7 +60,9 @@ async function createWindow() {
     minHeight: 560,
     backgroundColor: '#0f1115',
     title: 'TRCL',
+    icon: ICON,
     autoHideMenuBar: true,
+    show: false,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
@@ -56,6 +73,7 @@ async function createWindow() {
     shell.openExternal(url);
     return { action: 'deny' };
   });
+  win.once('ready-to-show', () => win.show());
   await win.loadURL(`http://127.0.0.1:${PORT}/`);
   win.on('closed', () => (win = null));
 }

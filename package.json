@@ -24,11 +24,22 @@
       "ui/**/*",
       "electron/**/*",
       "LICENSE",
+      "NOTICE.md",
       "THIRD_PARTY_NOTICES.md",
       "package.json"
     ],
     "win": {
-      "target": "nsis"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "ui/icon-512.png",
+      "executableName": "TRCL"
     },
     "mac": {
       "target": "dmg",
@@ -43,8 +54,16 @@
       "synopsis": "Minecraft Java Edition launcher"
     },
     "asar": false,
-    "artifactName": "mc-launcher-${version}-${os}-${arch}.${ext}",
-    "icon": "ui/icon-512.png"
+    "artifactName": "TRCL-${version}-${os}-${arch}.${ext}",
+    "icon": "ui/icon-512.png",
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "TRCL",
+      "deleteAppDataOnUninstall": false
+    }
   },
   "main": "electron/main.cjs",
   "author": {

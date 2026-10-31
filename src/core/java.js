@@ -66,6 +66,43 @@ async function expandGlobs(parents) {
   return out;
 }
 
+/**
+ * 各平台常见的 Java 安装父目录（纯函数，便于测试）。
+ * Windows 覆盖 Oracle / Adoptium / Zulu / Microsoft / Corretto / BellSoft / Semeru。
+ */
+export function standardJavaDirs({ platform = process.platform, env = process.env, home = os.homedir() } = {}) {
+  const win = path.win32;
+  if (platform === 'win32') {
+    const pf = env.ProgramFiles || 'C:\\Program Files';
+    const pf86 = env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)';
+    const local = env.LOCALAPPDATA || win.join(home, 'AppData', 'Local');
+    const roaming = env.APPDATA || win.join(home, 'AppData', 'Roaming');
+    return [
+      win.join(pf, 'Java'),
+      win.join(pf, 'Eclipse Adoptium'),
+      win.join(pf, 'Microsoft'),
+      win.join(pf, 'Zulu'),
+      win.join(pf, 'BellSoft'),
+      win.join(pf, 'Amazon Corretto'),
+      win.join(pf, 'Semeru'),
+      win.join(pf, 'IBM', 'Semeru'),
+      win.join(pf, 'JavaSoft'),
+      win.join(pf86, 'Java'),
+      win.join(pf86, 'Eclipse Adoptium'),
+      win.join(pf86, 'Zulu'),
+      win.join(local, 'Programs', 'Eclipse Adoptium'),
+      win.join(local, 'Programs', 'Zulu'),
+      win.join(local, 'Programs', 'Microsoft'),
+      win.join(local, 'Programs', 'Java'),
+      win.join(roaming, 'Zulu'),
+    ];
+  }
+  if (platform === 'darwin') {
+    return ['/Library/Java/JavaVirtualMachines', path.join(home, 'Library/Java/JavaVirtualMachines')];
+  }
+  return ['/usr/lib/jvm', '/usr/lib64/jvm', '/usr/java', '/opt/java', '/opt/jdk', '/opt/zulu'];
+}
+
 /** 找出机器上所有可用的 Java。 */
 export async function findJavas(root) {
   const explicit = [];
@@ -84,20 +121,7 @@ export async function findJavas(root) {
     /* none */
   }
 
-  let standard = [];
-  if (isWindows) {
-    standard = await expandGlobs([
-      'C:\\Program Files\\Java',
-      'C:\\Program Files\\Eclipse Adoptium',
-      'C:\\Program Files\\Microsoft',
-      path.join(process.env.LOCALAPPDATA || '', 'Programs', 'Eclipse Adoptium'),
-      path.join(process.env.LOCALAPPDATA || '', 'Programs', 'Java'),
-    ]);
-  } else if (isMac) {
-    standard = await expandGlobs(['/Library/Java/JavaVirtualMachines', path.join(os.homedir(), 'Library/Java/JavaVirtualMachines')]);
-  } else {
-    standard = await expandGlobs(['/usr/lib/jvm', '/usr/java', '/opt/java']);
-  }
+  let standard = await expandGlobs(standardJavaDirs());
   standard = await tryCandidates(standard);
 
   const candidates = [...new Set([...runtimes, ...standard, ...explicit])];

@@ -12,6 +12,7 @@ import { readZipEntries, readEntryData, extractTarGz } from '../src/core/zip.js'
 import { mrpackIndex, mmcPack } from '../src/core/export.js';
 import { matchesRules, defaultRuleContext } from '../src/core/rules.js';
 import { mavenPath, offlineUuid, slugify } from '../src/core/util.js';
+import { standardJavaDirs } from '../src/core/java.js';
 import { pickZuluPackage, zuluQuery, zuluTarget } from '../src/core/zulu.js';
 import { isArchiveMagic, oracleTarget, parseOracleLinks, pickOraclePackage } from '../src/core/oracle.js';
 
@@ -347,4 +348,23 @@ test('Oracle 下载结果校验：登录页不算安装包', () => {
   assert.equal(isArchiveMagic(gz, 'jdk-21_linux-aarch64_bin.tar.gz'), true);
   assert.equal(isArchiveMagic(zip, 'jdk-21_windows-x64_bin.zip'), true);
   assert.equal(isArchiveMagic(html, 'jdk-21_linux-aarch64_bin.tar.gz'), false);
+});
+
+test('Windows 的 Java 搜索目录覆盖主流发行版', () => {
+  const dirs = standardJavaDirs({
+    platform: 'win32',
+    env: { ProgramFiles: 'C:\\PF', 'ProgramFiles(x86)': 'C:\\PF86', LOCALAPPDATA: 'C:\\Local', APPDATA: 'C:\\Roaming' },
+    home: 'C:\\Users\\me',
+  });
+  for (const want of ['C:\\PF\\Java', 'C:\\PF\\Zulu', 'C:\\PF\\Eclipse Adoptium', 'C:\\PF\\Amazon Corretto', 'C:\\Local\\Programs\\Zulu']) {
+    assert.ok(dirs.includes(want), `缺少 ${want}`);
+  }
+  assert.ok(dirs.some((d) => d.includes('Microsoft')));
+});
+
+test('macOS 与 Linux 的 Java 搜索目录', () => {
+  const mac = standardJavaDirs({ platform: 'darwin', home: '/Users/me' });
+  assert.ok(mac.includes('/Library/Java/JavaVirtualMachines'));
+  const linux = standardJavaDirs({ platform: 'linux', home: '/home/me' });
+  assert.ok(linux.includes('/usr/lib/jvm'));
 });

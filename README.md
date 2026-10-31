@@ -2,6 +2,8 @@
 
 **Tiny Runtime Craft Launcher**：一个自己写的 Minecraft: Java 版启动器，思路对齐 HMCL（Hello Minecraft! Launcher）/ PCL（Plain Craft Launcher）：下载版本、补全依赖、拼启动参数、管实例和模组。
 
+**平台优先级**：Windows 为主（主要开发和发布目标），Linux / macOS 同步维护，Android 见 `android-app/`。
+
 **形态**：Node.js 核心 + 本地 HTTP 服务 + 网页 UI，外加 Electron 外壳。
 好处是同一套核心在 Windows / macOS / Linux / Android（Termux 或 proot）上都能跑，界面用浏览器打开即可，Electron 只负责开窗口和打包。
 
@@ -40,20 +42,15 @@ npm start            # 启动本地服务
 
 ### 安装包（dist/）
 
-本机（arm64 Linux）已经产出的：
+产物命名：`TRCL-<版本>-<平台>-<架构>.<扩展名>`，例如 `TRCL-0.1.0-win-x64.exe`。
 
-| 文件 | 平台 | 说明 |
+| 平台 | 产物 | 说明 |
 | --- | --- | --- |
-| `mc-launcher-0.1.0-linux-x86_64.AppImage` | Linux x64 | 下载后 `chmod +x` 直接运行 |
-| `mc-launcher-0.1.0-linux-arm64.AppImage` | Linux ARM64 | 同上 |
-| `mc-launcher-0.1.0-linux-amd64.deb` | Debian/Ubuntu x64 | `sudo dpkg -i` |
-| `mc-launcher-0.1.0-linux-arm64.deb` | Debian/Ubuntu ARM64 | `sudo dpkg -i` |
-| `mc-launcher-0.1.0-win-x64.zip` | Windows x64 | 便携版，解压后运行 `MC Launcher.exe` |
-| `mc-launcher-0.1.0-mac-x64.zip` | macOS Intel | 解压后右键「打开」（未签名） |
-| `mc-launcher-0.1.0-mac-arm64.zip` | macOS Apple Silicon | 同上 |
-| `MC-Launcher-0.1.0-android-termux-arm64.tar.gz` | Android | Termux 安装包，见 `android/README.md` |
+| **Windows x64 / arm64** | NSIS 安装器 `.exe` | 主要目标；双击安装，可选目录，不装到 Program Files 时免管理员 |
+| Linux x64 / arm64 | AppImage + deb | `chmod +x` 或 `sudo dpkg -i` |
+| macOS x64 / arm64 | dmg | 未签名，首次打开需右键「打开」 |
 
-**没有 NSIS `.exe` 和 `.dmg`**：前者需要 Windows 或 wine 跑 makensis，后者需要 macOS 的 hdiutil，这台 arm64 Linux 上做不出来。Windows 的 zip 是便携版，解压即用；要安装器请走 CI。
+本机是 arm64 Linux，做不出 NSIS 和 dmg（需要 Windows 或 macOS 工具链），这两类安装包由 CI 出。
 
 ### 用 GitHub Actions 出正式安装包
 
@@ -227,6 +224,7 @@ src/core/
   rules.js     Mojang 规则引擎
   java.js      Java 探测、按大版本挑选、运行时安装
   zulu.js      Zulu 元数据查询、包选择、下载解压
+  oracle.js    Oracle 下载页解析、匿名直链探测、校验
   auth.js      离线 / 微软设备码 / 账号存储
   loaders.js   Fabric / Quilt / Forge / NeoForge
   instances.js 实例 CRUD
