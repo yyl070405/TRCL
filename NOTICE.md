@@ -24,3 +24,17 @@ GPLv3 具有传染性：一旦引入 FCL 代码，整个分发物都按 GPLv3 �
 | 本项目自身 | GPL-3.0-or-later |
 
 详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+
+## 二次分发要求
+
+本项目以 GPL-3.0-or-later 授权。依据 GPLv3 第 7(b) 条，允许附加下列归属条款；任何二次分发（包括修改后分发、打包进其他产品、上架应用商店）必须：
+
+1. 保留本项目的版权声明与 `LICENSE`、`NOTICE.md`
+2. 在发行页面、关于页或安装包可见位置标注来源：
+   - 项目名：TRCL（Tiny Runtime Craft Launcher）
+   - 源码地址：https://github.com/yyl070405/TRCL
+   - 原作者：yyl070405
+3. 若修改过代码，明确说明修改内容与日期，不得暗示原项目认可该修改
+4. 按 GPLv3 提供完整对应源码（含你的修改）
+
+以上不构成对 GPLv3 的额外限制，只是第 7(b) 条允许的归属要求；除此之外，接收者仍享有 GPLv3 的全部权利。

@@ -283,3 +283,5 @@ npm test
 - 若分发物包含 PojavLauncher（GPLv3）代码，整个分发包按 GPLv3 处理，保留原作者声明并提供源码。
 
 详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+
+**二次分发**：依据 GPLv3 §7(b)，分发时必须保留 `LICENSE` 与 `NOTICE.md`，并在发行页标注来源（TRCL、上游仓库地址、作者），修改过的需说明改动。详见 [NOTICE.md](NOTICE.md)。
