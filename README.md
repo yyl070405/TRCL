@@ -78,6 +78,8 @@ git tag v0.1.0 && git push origin v0.1.0
 
 ### 本地打包
 
+Windows 安装器也可以只用系统 NSIS 出（不需要 electron-builder 的 NSIS 工具链，见 [installer/README.md](installer/README.md)）。
+
 ```bash
 npm install                                  # 装 electron + electron-builder
 npm run app                                  # 直接以桌面窗口运行
