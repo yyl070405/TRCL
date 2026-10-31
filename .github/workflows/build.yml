@@ -23,7 +23,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          npx electron-builder --linux AppImage deb --x64 2>&1 | tee build-linux.log
+          npx electron-builder --linux AppImage deb --x64 --publish never 2>&1 | tee build-linux.log
       - name: 失败日志推到 ci-logs 分支
         if: failure()
         continue-on-error: true
@@ -55,7 +55,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          npx electron-builder --win nsis --x64 2>&1 | tee build-windows.log
+          npx electron-builder --win nsis --x64 --publish never 2>&1 | tee build-windows.log
       - name: 失败日志推到 ci-logs 分支
         if: failure()
         continue-on-error: true
@@ -90,7 +90,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          npx electron-builder --mac dmg --${{ matrix.arch }} 2>&1 | tee build-macos-${{ matrix.arch }}.log
+          npx electron-builder --mac dmg --${{ matrix.arch }} --publish never 2>&1 | tee build-macos-${{ matrix.arch }}.log
       - name: 失败日志推到 ci-logs 分支
         if: failure()
         continue-on-error: true
