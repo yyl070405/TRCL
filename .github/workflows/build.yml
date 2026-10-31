@@ -4,8 +4,6 @@ on:
   workflow_dispatch:
   push:
     tags: ["v*"]
-  pull_request:
-    paths: [".github/workflows/build.yml"]
 
 permissions:
   contents: write
@@ -24,6 +22,12 @@ jobs:
         run: |
           set -o pipefail
           npx electron-builder --linux AppImage deb --x64 --publish never 2>&1 | tee build-linux.log
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: |
+            dist/*.AppImage
+            dist/*.deb
       - name: 失败日志推到 ci-logs 分支
         if: failure()
         continue-on-error: true
@@ -34,14 +38,8 @@ jobs:
           mkdir -p ci-logs
           cp build-*.log ci-logs/ 2>/dev/null || true
           git add -f ci-logs
-          git commit -m "ci log: ${{ github.job }}" || true
+          git commit -m "ci log: linux ${{ github.ref_name }}" || true
           git push -f origin HEAD:refs/heads/ci-logs || true
-      - uses: actions/upload-artifact@v4
-        with:
-          name: linux-x64
-          path: |
-            dist/*.AppImage
-            dist/*.deb
 
   windows:
     runs-on: windows-latest
@@ -56,6 +54,32 @@ jobs:
         run: |
           set -o pipefail
           npx electron-builder --win --x64 --publish never 2>&1 | tee build-windows.log
+      - name: 生成 MSI（WiX）
+        shell: pwsh
+        run: |
+          Start-Transcript -Path build-msi.log -Force | Out-Null
+          choco install wixtoolset --no-progress -y
+          $candidates = @(
+            'C:\Program Files (x86)\WiX Toolset v3.14\bin',
+            'C:\Program Files (x86)\WiX Toolset v3.11\bin',
+            'C:\Program Files\WiX Toolset v3.14\bin'
+          )
+          $wixBin = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $wixBin) { throw '没有找到 WiX 3 的 bin 目录' }
+          $env:PATH = "$env:PATH;$wixBin"
+          $ver = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          $src = "$PWD\dist\win-unpacked"
+          & "$wixBin\heat.exe" dir $src -cg AppFiles -dr INSTALLFOLDER -gg -g1 -sfrag -srd -var var.SourceDir -out dist\files.wxs
+          & "$wixBin\candle.exe" -dSourceDir=$src -dVersion=$ver -dLicenseRtf="$PWD\installer\NOTICE.rtf" -out dist\product.wixobj installer\trcl.wxs
+          & "$wixBin\candle.exe" -dSourceDir=$src -out dist\files.wixobj dist\files.wxs
+          & "$wixBin\light.exe" -ext WixUIExtension dist\product.wixobj dist\files.wixobj -out "dist\TRCL-$ver-win-x64.msi"
+          Stop-Transcript | Out-Null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: |
+            dist/*.exe
+            dist/*.msi
       - name: 失败日志推到 ci-logs 分支
         if: failure()
         continue-on-error: true
@@ -66,29 +90,11 @@ jobs:
           mkdir -p ci-logs
           cp build-*.log ci-logs/ 2>/dev/null || true
           git add -f ci-logs
-          git commit -m "ci log: ${{ github.job }}" || true
+          git commit -m "ci log: windows ${{ github.ref_name }}" || true
           git push -f origin HEAD:refs/heads/ci-logs || true
-      - name: 生成 MSI（WiX）
-        shell: pwsh
-        run: |
-          choco install wixtoolset --no-progress -y
-          $wixBin = (Get-ChildItem 'C:\Program Files (x86)\WiX Toolset*' -Directory | Select-Object -First 1).FullName + '\bin'
-          $env:PATH = "$env:PATH;$wixBin"
-          $ver = (Get-Content package.json -Raw | ConvertFrom-Json).version
-          heat dir dist\win-unpacked -cg AppFiles -dr INSTALLFOLDER -gg -g1 -sfrag -srd -var var.SourceDir -out dist\files.wxs
-          candle -dSourceDir="$PWD\dist\win-unpacked" -dVersion=$ver -dLicenseRtf="$PWD\installer\NOTICE.rtf" -out dist\product.wixobj installer\trcl.wxs
-          candle -dSourceDir="$PWD\dist\win-unpacked" -out dist\files.wixobj dist\files.wxs
-          light -ext WixUIExtension dist\product.wixobj dist\files.wixobj -out "dist\TRCL-$ver-win-x64.msi"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: windows-x64
-          path: |
-            dist/*.exe
-            dist/*.msi
 
   macos:
     runs-on: macos-14
-    # macOS 构建失败不阻塞 Release（Windows / Linux 产物照常发布）
     continue-on-error: true
     strategy:
       matrix:
@@ -104,18 +110,6 @@ jobs:
         run: |
           set -o pipefail
           npx electron-builder --mac dmg --${{ matrix.arch }} --publish never 2>&1 | tee build-macos-${{ matrix.arch }}.log
-      - name: 失败日志推到 ci-logs 分支
-        if: failure()
-        continue-on-error: true
-        shell: bash
-        run: |
-          git config user.name "ci-bot"
-          git config user.email "ci-bot@users.noreply.github.com"
-          mkdir -p ci-logs
-          cp build-*.log ci-logs/ 2>/dev/null || true
-          git add -f ci-logs
-          git commit -m "ci log: ${{ github.job }}" || true
-          git push -f origin HEAD:refs/heads/ci-logs || true
       - uses: actions/upload-artifact@v4
         with:
           name: macos-${{ matrix.arch }}
