@@ -68,10 +68,23 @@ jobs:
           git add -f ci-logs
           git commit -m "ci log: ${{ github.job }}" || true
           git push -f origin HEAD:refs/heads/ci-logs || true
+      - name: 生成 MSI（WiX）
+        shell: pwsh
+        run: |
+          choco install wixtoolset --no-progress -y
+          $wixBin = (Get-ChildItem 'C:\Program Files (x86)\WiX Toolset*' -Directory | Select-Object -First 1).FullName + '\bin'
+          $env:PATH = "$env:PATH;$wixBin"
+          $ver = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          heat dir dist\win-unpacked -cg AppFiles -dr INSTALLFOLDER -gg -g1 -sfrag -srd -var var.SourceDir -out dist\files.wxs
+          candle -dSourceDir="$PWD\dist\win-unpacked" -dVersion=$ver -dLicenseRtf="$PWD\installer\NOTICE.rtf" -out dist\product.wixobj installer\trcl.wxs
+          candle -dSourceDir="$PWD\dist\win-unpacked" -out dist\files.wixobj dist\files.wxs
+          light -ext WixUIExtension dist\product.wixobj dist\files.wixobj -out "dist\TRCL-$ver-win-x64.msi"
       - uses: actions/upload-artifact@v4
         with:
           name: windows-x64
-          path: dist/*.exe
+          path: |
+            dist/*.exe
+            dist/*.msi
 
   macos:
     runs-on: macos-14

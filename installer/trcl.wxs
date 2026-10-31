@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TRCL 的 WiX 3 定义：per-user 安装到 %LOCALAPPDATA%\TRCL，带使用须知页。
+     文件列表由 CI 里 heat 从 dist/win-unpacked 生成（files.wxs），这里只定义产品与目录。 -->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*"
+           Name="TRCL"
+           Language="1033"
+           Version="$(var.Version)"
+           Manufacturer="yyl070405"
+           UpgradeCode="5a5a9d34-3a34-4ea1-9a52-1a5b2f0d2b8d">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perUser" />
+    <MajorUpgrade DowngradeErrorMessage="已经安装了更新版本的 TRCL，请先卸载。" />
+    <MediaTemplate EmbedCab="yes" />
+
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.LicenseRtf)" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <UIRef Id="WixUI_InstallDir" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="LocalAppDataFolder">
+        <Directory Id="INSTALLFOLDER" Name="TRCL" />
+      </Directory>
+    </Directory>
+
+    <Feature Id="Main" Title="TRCL" Level="1" Display="expand" AllowAbsent="no">
+      <ComponentGroupRef Id="AppFiles" />
+    </Feature>
+  </Product>
+</Wix>
