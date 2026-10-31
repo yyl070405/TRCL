@@ -39,7 +39,7 @@ public final class Meta {
         conn.setConnectTimeout(15000);
         conn.setReadTimeout(30000);
         conn.setInstanceFollowRedirects(true);
-        conn.setRequestProperty("User-Agent", "MCLauncher/0.1");
+        conn.setRequestProperty("User-Agent", "TRCL/0.1 (+https://github.com/yyl070405/TRCL)");
         int code = conn.getResponseCode();
         if (code != 200) {
             conn.disconnect();

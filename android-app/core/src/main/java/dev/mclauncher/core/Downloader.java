@@ -26,7 +26,7 @@ public final class Downloader {
         void onProgress(int done, int total, String label);
     }
 
-    private static final String USER_AGENT = "MCLauncher/0.1";
+    private static final String USER_AGENT = "TRCL/0.1 (+https://github.com/yyl070405/TRCL)";
 
     public void download(Installer.Task task) throws IOException {
         File dest = new File(task.dest);

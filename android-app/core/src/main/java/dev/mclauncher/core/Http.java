@@ -12,7 +12,7 @@ import java.util.Map;
 
 /** 极简 HTTP 封装（GET / 表单 POST / JSON POST），兼容 Android。 */
 public final class Http {
-    private static final String USER_AGENT = "MCLauncher/0.1";
+    private static final String USER_AGENT = "TRCL/0.1 (+https://github.com/yyl070405/TRCL)";
 
     private Http() {
     }

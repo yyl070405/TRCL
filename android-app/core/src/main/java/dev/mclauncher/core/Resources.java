@@ -166,7 +166,7 @@ public final class Resources {
                 conn.setConnectTimeout(12000);
                 conn.setReadTimeout(12000);
                 conn.setInstanceFollowRedirects(true);
-                conn.setRequestProperty("User-Agent", "MCLauncher/0.1");
+                conn.setRequestProperty("User-Agent", "TRCL/0.1 (+https://github.com/yyl070405/TRCL)");
                 int code = conn.getResponseCode();
                 long len = conn.getContentLengthLong();
                 conn.disconnect();

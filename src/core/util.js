@@ -8,7 +8,7 @@ import { pipeline } from 'node:stream/promises';
 
 export const isWindows = process.platform === 'win32';
 export const isMac = process.platform === 'darwin';
-export const USER_AGENT = 'MCLauncher/0.1 (+https://github.com/mc-launcher)';
+export const USER_AGENT = 'TRCL/0.1 (+https://github.com/yyl070405/TRCL)';
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function defaultHome() {

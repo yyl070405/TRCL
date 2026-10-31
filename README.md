@@ -274,16 +274,16 @@ npm test
 
 已实现与未实现的功能清单见 [docs/STATUS.md](docs/STATUS.md)，只记录核实过的状态。
 
-## 许可证
+## 许可证与声明
 
-**GPL-3.0-or-later**，见 [LICENSE](LICENSE)。
+**GPL-3.0-or-later**，见 [LICENSE](LICENSE)。完整声明见 [NOTICE.md](NOTICE.md)，要点：
 
-- 分发编译好的安装包时，必须同时提供完整对应源码。源码地址：本仓库；如果你改了代码再分发，也要公开你的修改。
-- 本项目**不含** Minecraft 游戏文件（运行时下载），也**不含** PojavLauncher 代码。依赖的 Electron / electron-builder / Node 均为 MIT。
-- 若分发物包含 PojavLauncher（GPLv3）代码，整个分发包按 GPLv3 处理，保留原作者声明并提供源码。
+- **非官方**：本项目是个人独立开发的第三方启动器，与 Mojang Studios / Microsoft 无隶属或背书关系；Minecraft 是其商标。
+- **不含游戏文件**：client.jar、libraries、assets 运行时下载，需自备合法副本并遵守 Minecraft EULA。不提供、不协助绕过正版验证。
+- **账号与隐私**：登录令牌只存在本机数据目录，不上传；无遥测、无统计、无崩溃上报。
+- **担保免责**：按「现状」提供，不附带任何担保；存档与配置请自行备份。
+- **源码义务**：分发编译好的安装包时必须同时提供完整对应源码（本仓库；改过代码则一并公开修改）。依赖的 Electron / electron-builder / Node 均为 MIT；本项目**不含** PojavLauncher 代码，若将来打进安装包，整个分发物按 GPLv3 处理并保留原作者声明。
+- **二次分发**：依据 GPLv3 §7(b)，必须保留 `LICENSE` 与 `NOTICE.md`，在发行页/关于页标注来源（TRCL、https://github.com/yyl070405/TRCL、yyl070405），修改过的需说明改动。允许收费分发，但不得附加 GPLv3 不允许的额外限制。
+- **解释权**：本项目文档及其中归属条款的解释权归 TRCL 项目（yyl070405）所有；GPL-3.0-or-later 正文本身不受此声明影响，接收者的 GPLv3 权利不因此减少。
 
-详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
-
-**二次分发**：依据 GPLv3 §7(b)，分发时必须保留 `LICENSE` 与 `NOTICE.md`，并在发行页标注来源（TRCL、上游仓库地址、作者），修改过的需说明改动。详见 [NOTICE.md](NOTICE.md)。
-
-**解释权**：本项目文档及其中归属条款的解释权归 TRCL 项目（yyl070405）所有；GPL-3.0-or-later 正文本身不受此声明影响，接收者的 GPLv3 权利不因此减少。详见 [NOTICE.md](NOTICE.md)。
+第三方组件许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
