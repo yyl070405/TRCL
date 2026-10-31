@@ -17,4 +17,14 @@ makensis -DVERSION=0.1.0 \
 - 默认装到 `%LOCALAPPDATA%\Programs\TRCL`，普通用户权限，不要管理员
 - 注册表只写 `HKCU\Software\TRCL` 与卸载项，不写系统级位置
 - 卸载只删程序文件，`data` 目录（存档、实例、下载）保留
+
+## Windows 的三种形式
+
+| 形式 | 产物 | 用途 | 在哪构建 |
+| --- | --- | --- | --- |
+| 图形安装器 | `TRCL-<版本>-win-x64-setup.exe`（NSIS） | 普通用户：须知 → 选目录 → 安装 | 本机 `makensis` 即可 |
+| MSI | `TRCL-<版本>-win-x64.msi` | 企业部署、静默安装 `msiexec /i ... /qn` | 只能在 Windows 上构建（WiX），走 CI |
+| 命令行 | 安装目录里的 `trcl.cmd` | 脚本/自动化：`trcl.cmd install 1.21.4` | 随包提供，无需 Node |
+
+`setup.exe` 也支持静默安装：`TRCL-0.1.0-win-x64-setup.exe /S /D=C:\TRCL`（`/D` 必须是最后一个参数，且路径不加引号）。
 - 使用须知文本在 `NOTICE.txt`，`NOTICE.rtf` 是给 NSIS 许可页用的转换结果（改文本后要重新生成）

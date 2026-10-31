@@ -37,6 +37,12 @@
             "x64",
             "arm64"
           ]
+        },
+        {
+          "target": "msi",
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "icon": "ui/icon-512.png",
@@ -74,7 +80,20 @@
     "electronLanguages": [
       "zh-CN",
       "en-US"
-    ]
+    ],
+    "extraFiles": [
+      {
+        "from": "installer/trcl.cmd",
+        "to": "trcl.cmd"
+      }
+    ],
+    "msi": {
+      "oneClick": false,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "runAfterFinish": true,
+      "upgradeCode": "5a5a9d34-3a34-4ea1-9a52-1a5b2f0d2b8d"
+    }
   },
   "main": "electron/main.cjs",
   "author": "yyl070405 <yyl070405@users.noreply.github.com>",

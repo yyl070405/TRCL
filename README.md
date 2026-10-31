@@ -60,7 +60,9 @@ npm start            # 启动本地服务
 
 | 平台 | 产物 | 说明 |
 | --- | --- | --- |
-| **Windows x64 / arm64** | NSIS 安装器 `.exe` | 主要目标；先看「使用须知」并接受，再选安装目录，装完即用 |
+| **Windows x64 / arm64** | NSIS 安装器 `.exe` | 图形安装；先看「使用须知」并接受，再选安装目录，装完即用 |
+| **Windows x64** | MSI 安装包 `.msi` | 企业部署 / 静默安装；由 CI 在 Windows 上构建 |
+| **Windows** | 命令行入口 `trcl.cmd` | 随安装目录提供，`trcl.cmd help` 看用法；`setup.exe /S /D=C:\TRCL` 可静默安装 |
 | Linux x64 / arm64 | AppImage + deb | `chmod +x` 或 `sudo dpkg -i` |
 | macOS x64 / arm64 | dmg | 未签名，首次打开需右键「打开」 |
 
@@ -89,6 +91,16 @@ npx electron-builder --linux AppImage deb     # 或 --win nsis / --mac dmg
 打包时注意：`build.files` 必须包含 `electron/**/*`（入口在主进程里），`asar` 已关闭，因为主进程要用 Node 子进程跑 `src/server`。
 
 ### 命令行
+
+Windows 装好之后不用装 Node，直接用 `trcl.cmd`（装在安装目录里，用 Electron 自带的 Node 跑 CLI）：
+
+```bat
+trcl.cmd versions
+trcl.cmd install 1.21.4
+trcl.cmd launch 生存
+```
+
+源码里跑就是：
 
 ```bash
 node src/cli.js versions
