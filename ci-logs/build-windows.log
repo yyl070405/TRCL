@@ -1,0 +1,51 @@
+  • electron-builder  version=26.18.0 os=10.0.26100
+  • loaded configuration  file=package.json ("build" field)
+  • executing @electron/rebuild  electronVersion=33.4.11 arch=x64 buildFromSource=false workspaceRoot=D:\a\TRCL\TRCL projectDir=./ appDir=./
+  • installing native dependencies  arch=x64
+  • completed installing native dependencies
+  • packaging       platform=win32 arch=x64 electron=33.4.11 appOutDir=dist\win-unpacked
+  • downloaded      label=electron progress=100%
+  • downloaded electron zip extracted successfully  output=D:\a\TRCL\TRCL\dist\win-unpacked
+  • asar usage is disabled — this is strongly not recommended  solution=enable asar and use asarUnpack to unpack files that must be externally available
+  • searching for node modules  pm=npm searchDir=D:\a\TRCL\TRCL
+  • no node modules found in collection, trying next search directory  pm=npm searchDir=D:\a\TRCL\TRCL
+  • searching for node modules  pm=traversal searchDir=D:\a\TRCL\TRCL
+  • using manual traversal of node_modules to build dependency tree
+  • no node modules found in collection, trying next search directory  pm=traversal searchDir=D:\a\TRCL\TRCL
+  • no node modules returned while searching directories  searchDirectories=[""]
+  • asar usage is disabled — this is strongly not recommended  solution=enable asar and use asarUnpack to unpack files that must be externally available
+  • downloaded      label=icons-bundle.tar.gz progress=100%
+  • no code signing certificate configured, signing is skipped  path=dist\win-unpacked\TRCL.exe
+  • building        target=zip arch=x64 file=dist\TRCL-0.1.2-win-x64.zip
+  • executing @electron/rebuild  electronVersion=33.4.11 arch=arm64 buildFromSource=false workspaceRoot=D:\a\TRCL\TRCL projectDir=./ appDir=./
+  • installing native dependencies  arch=arm64
+  • downloaded      label=7zip-win-x64.tar.gz progress=100%
+  • completed installing native dependencies
+  • packaging       platform=win32 arch=arm64 electron=33.4.11 appOutDir=dist\win-arm64-unpacked
+  • downloaded      label=electron progress=100%
+  • downloaded electron zip extracted successfully  output=D:\a\TRCL\TRCL\dist\win-arm64-unpacked
+  • asar usage is disabled — this is strongly not recommended  solution=enable asar and use asarUnpack to unpack files that must be externally available
+  • searching for node modules  pm=npm searchDir=D:\a\TRCL\TRCL
+  • no node modules found in collection, trying next search directory  pm=npm searchDir=D:\a\TRCL\TRCL
+  • searching for node modules  pm=traversal searchDir=D:\a\TRCL\TRCL
+  • using manual traversal of node_modules to build dependency tree
+  • no node modules found in collection, trying next search directory  pm=traversal searchDir=D:\a\TRCL\TRCL
+  • no node modules returned while searching directories  searchDirectories=[""]
+  • asar usage is disabled — this is strongly not recommended  solution=enable asar and use asarUnpack to unpack files that must be externally available
+  • no code signing certificate configured, signing is skipped  path=dist\win-arm64-unpacked\TRCL.exe
+  • building        target=nsis file=dist\TRCL-0.1.2-win.exe archs=x64, arm64 oneClick=false perMachine=false
+  • downloaded      label=nsis-3.0.4.1.7z progress=100%
+  • no code signing certificate configured, signing is skipped  path=C:\Users\RUNNER~1\AppData\Local\Temp\t-uFf0Mv\elevate-staging-2\resources\elevate.exe
+  • no code signing certificate configured, signing is skipped  path=C:\Users\RUNNER~1\AppData\Local\Temp\t-uFf0Mv\elevate-staging-3\resources\elevate.exe
+  • building        target=nsis file=dist\TRCL-0.1.2-win-x64.exe archs=x64 oneClick=false perMachine=false
+  • building        target=nsis file=dist\TRCL-0.1.2-win-arm64.exe archs=arm64 oneClick=false perMachine=false
+  • downloaded      label=nsis-resources-3.4.1.7z progress=100%
+  • no code signing certificate configured, signing is skipped  path=dist\TRCL-0.1.2-win-x64.__uninstaller.exe
+  • no code signing certificate configured, signing is skipped  path=dist\TRCL-0.1.2-win-arm64.__uninstaller.exe
+  • no code signing certificate configured, signing is skipped  path=dist\TRCL-0.1.2-win.__uninstaller.exe
+  • no code signing certificate configured, signing is skipped  path=dist\TRCL-0.1.2-win-x64.exe
+  • building block map  blockMapFile=dist\TRCL-0.1.2-win-x64.exe.blockmap
+  • no code signing certificate configured, signing is skipped  path=dist\TRCL-0.1.2-win-arm64.exe
+  • building block map  blockMapFile=dist\TRCL-0.1.2-win-arm64.exe.blockmap
+  • no code signing certificate configured, signing is skipped  path=dist\TRCL-0.1.2-win.exe
+  • building block map  blockMapFile=dist\TRCL-0.1.2-win.exe.blockmap
