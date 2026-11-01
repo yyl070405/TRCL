@@ -75,7 +75,8 @@ jobs:
           $ver = $parts -join '.'
           $src = Join-Path $PWD 'dist\win-unpacked'
           $lic = Join-Path $PWD 'installer\NOTICE.rtf'
-          $msi = Join-Path $PWD 'dist' "TRCL-$ver-win-x64.msi"
+          $rawVer = ((Get-Content package.json -Raw | ConvertFrom-Json).version)
+          $msi = Join-Path $PWD 'dist' "TRCL-$rawVer-win-x64.msi"
           Step 'heat' { & (Join-Path $wixBin 'heat.exe') dir $src -cg AppFiles -dr INSTALLFOLDER -gg -g1 -sfrag -srd -var var.SourceDir -out dist\files.wxs }
           Step 'candle product' { & (Join-Path $wixBin 'candle.exe') -nologo "-dSourceDir=$src" "-dVersion=$ver" "-dLicenseRtf=$lic" -out dist\product.wixobj installer\trcl.wxs }
           Step 'candle files' { & (Join-Path $wixBin 'candle.exe') -nologo "-dSourceDir=$src" -out dist\files.wixobj dist\files.wxs }
@@ -87,6 +88,7 @@ jobs:
           path: |
             dist/*.exe
             dist/*.msi
+            dist/*.zip
       - name: 失败日志推到 ci-logs 分支
         # continue-on-error 的步骤不会让 job 变成 failure，所以显式看 outcome
         if: failure() || steps.msi.outcome == 'failure'
