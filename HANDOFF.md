@@ -1,8 +1,39 @@
 # 交接说明（HANDOFF）
 
-最后更新：2026-10-31
+最后更新：2026-11-01
+
+## 2026-11 方向变更：桌面端改纯 Java
+
+- 新的桌面实现：`desktop-java/`（Swing 窗口 + `ProcessBuilder` 直接起 java），核心复用 `android-app/core`，**不再有本地 HTTP 服务、网页界面，也不需要 Node/npm**。
+- 已验证：本机 Linux aarch64 + Xvfb 上，用 Java 启动器直接启动 1.21.4 + Fabric 0.20.1（52 个模组加载成功）。
+- 下面的 Node + Electron 内容保留作迁移参考，功能逐步搬到 Java 版后删除。
+
+## 在 Windows 上接手（DSH）
+
+1. 装 JDK 21（Zulu / Microsoft OpenJDK / Oracle 都行），确认 `javac -version` 可用。
+2. 拿到源码：`git clone https://github.com/yyl070405/TRCL.git`，或用随附的源码 zip。
+3. 编译并启动：
+   ```bat
+   cd desktop-java
+   build.cmd                 :: 编译 + 打开窗口
+   build.cmd --build-only    :: 只编译
+   ```
+4. 无界面启动一个已有实例（路径相对数据目录）：
+   ```bat
+   set MC_LAUNCHER_HOME=D:\mc-data
+   java -cp "build;..\android-app\libs\gson-2.11.0.jar" dev.trcl.desktop.Main --launch 1.21.4-Fabric-8db8
+   ```
+5. 数据目录：`MC_LAUNCHER_HOME` 优先，否则 `./data`；里面是 `instances/<id>/`、`shared/versions| libraries|assets`。
+
+**Windows 上还缺的**（Java 版尚未移植，先沿用旧 Node 版或按顺序补）：
+
+- 版本下载/安装（`Installer`/`Downloader` 在核心里有，桌面 UI 还没接）
+- natives 解压到实例目录（现在直接用已存在的 `natives/`）
+- Java 运行时自动下载（Zulu/Oracle 的 JS 实现在 `src/core/`，需要重写成 Java）
+- 模组、整合包、微软登录、options.txt/自动语言
 
 ## 一句话现状
+
 
 桌面端已经能完整下载、安装、启动、管模组；Android 端的管理核心（Java）已完成并通过自检，但**还不能启动游戏**；Linux ARM64（Android proot）上已经实测用本启动器进入 1.21.4 + Fabric 的世界。
 
