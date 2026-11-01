@@ -24,7 +24,7 @@ makensis -DVERSION=0.1.0 \
 | --- | --- | --- | --- |
 | 图形安装器 | `TRCL-<版本>-win-x64-setup.exe`（NSIS） | 普通用户：须知 → 选目录 → 安装 | 本机 `makensis` 即可 |
 | MSI | `TRCL-<版本>-win-x64.msi` | 企业部署、静默安装 `msiexec /i ... /qn` | WiX 3（`heat` + `candle` + `light`），跑在 CI 的 windows-latest 上；脚本见 `installer/trcl.wxs` 与 `.github/workflows/build.yml` |
-| 命令行 | 安装目录里的 `trcl.cmd` | 脚本/自动化：`trcl.cmd install 1.21.4` | 随包提供，无需 Node |
+| 便携版 | `TRCL-<版本>-win-x64.zip` | 解压即用，也带 `trcl.cmd` 命令行入口 | electron-builder `zip` target（本机或 CI） |
 
 `setup.exe` 也支持静默安装：`TRCL-0.1.0-win-x64-setup.exe /S /D=C:\TRCL`（`/D` 必须是最后一个参数，且路径不加引号）。
 - 使用须知文本在 `NOTICE.txt`，`NOTICE.rtf` 是给 NSIS 许可页用的转换结果（改文本后要重新生成）
