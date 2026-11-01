@@ -24,6 +24,11 @@ public final class Json {
         return GSON.fromJson(read(file), type);
     }
 
+    /** 读成 JsonObject，需要按字段递归合并版本 JSON 时用。 */
+    public static com.google.gson.JsonObject readJson(Path file) throws IOException {
+        return com.google.gson.JsonParser.parseString(read(file)).getAsJsonObject();
+    }
+
     public static void write(Path file, Object value) throws IOException {
         if (file.getParent() != null) {
             Files.createDirectories(file.getParent());

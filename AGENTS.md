@@ -4,6 +4,8 @@
 
 ## 这是什么
 
+> **方向变更（2026-11）**：桌面端改为纯 Java（`desktop-java/` + 复用 `android-app/core`），不再使用 Node / Web 前端。下面描述的 Node 实现是迁移前的版本，保留作参考。
+
 一个自己写的 Minecraft: Java 版启动器：
 
 - `mc-launcher/`：Node.js 核心 + 本地 HTTP 服务 + 网页 UI + Electron 外壳（桌面端完整可玩）

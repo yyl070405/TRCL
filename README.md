@@ -2,6 +2,8 @@
 
 **Tiny Runtime Craft Launcher**：一个自己让AI写的 Minecraft: Java 版启动器，思路对齐 HMCL（Hello Minecraft! Launcher）/ PCL（Plain Craft Launcher）：下载版本、补全依赖、拼启动参数、管实例和模组。
 
+**实现方向（2026-11 起）**：桌面端改成**纯 Java**——Swing 原生窗口，直接起 `java` 子进程跑游戏，**不经过本地网页，也不需要 Node / Electron / npm**。旧的 Node + 网页界面实现保留在 `src/`、`ui/`、`electron/` 里，作为迁移期间的参考。
+
 **平台优先级**：Windows 为主（主要开发和发布目标），Linux / macOS 同步维护，Android 见 `android-app/`。
 
 **形态**：核心 + 本地 HTTP 服务 + 网页 UI，外加 Electron 外壳。
@@ -23,6 +25,28 @@
 - 联网主页：设置里填一个 JSON 公告地址，主页显示公告与快捷启动；只渲染纯文本（交互形式参考 PCL2，代码自写）
 - 任务系统：安装/启动/模组/整合包都跑在后台任务里，UI 轮询进度和日志
 - Electron 打包配置（`electron-builder`）
+
+## 桌面端（Java，无需 Node）
+
+```bash
+cd desktop-java
+./build.sh              # 编译并打开窗口（JDK 17+，只需 Gson）
+./build.sh --build-only # 只编译
+```
+
+无界面启动某个已有实例，日志直接打到终端：
+
+```bash
+MC_LAUNCHER_HOME=../mc-data java -cp "build:../android-app/libs/gson-2.11.0.jar" \
+  dev.trcl.desktop.Main --launch 1.21.4-Fabric-8db8
+```
+
+- 核心复用 `android-app/core`（规则、库去重、启动参数、下载、微软登录都在里面）
+- 启动路径：读 `instance.json` → 递归合并版本 JSON（`inheritsFrom`）→ `LaunchArgs.build` 拼命令 → `ProcessBuilder` 起游戏，日志转回窗口
+- 实测（Linux aarch64 + Xvfb）：1.21.4 + Fabric 0.20.1 + 52 个模组直接加载成功，全程没有 Node 进程
+- 打包路线：JDK 自带 `jpackage`，Windows 出 `.exe`/`.msi`、Linux 出 `.deb`、macOS 出 `.dmg`，同样不需要 Node
+
+还没从旧实现搬过来的：版本下载/安装、实例新建、模组与整合包、微软登录、options 设置。
 
 ## 快速开始
 

@@ -35,7 +35,13 @@ public final class LaunchArgs {
 
     public static List<String> build(VersionMeta version, Path gameDir, Path shared, String baseId,
                                      Auth auth, Path javaBin, int memoryMb, int width, int height) {
-        Rules.Context ctx = Rules.Context.android();
+        return build(version, gameDir, shared, baseId, auth, javaBin, memoryMb, width, height, Rules.Context.android(), ":");
+    }
+
+    /** 桌面端用这个：自己传规则上下文和 classpath 分隔符（Windows 是分号）。 */
+    public static List<String> build(VersionMeta version, Path gameDir, Path shared, String baseId,
+                                     Auth auth, Path javaBin, int memoryMb, int width, int height,
+                                     Rules.Context ctx, String classpathSeparator) {
         Path librariesDir = shared.resolve("libraries");
         Path assetsDir = shared.resolve("assets");
         Path nativesDir = gameDir.resolve("natives");
@@ -51,7 +57,7 @@ public final class LaunchArgs {
             classpathEntries.add(Libraries.artifactPath(lib, librariesDir).toString());
         }
         classpathEntries.add(clientJar.toString());
-        String classpath = join(classpathEntries, ":");
+        String classpath = join(classpathEntries, classpathSeparator);
 
         String assetIndex = version.assetIndex != null && version.assetIndex.id != null
                 ? version.assetIndex.id
@@ -76,7 +82,7 @@ public final class LaunchArgs {
         vars.put("launcher_name", "MCLauncher");
         vars.put("launcher_version", "0.1.0");
         vars.put("classpath", classpath);
-        vars.put("classpath_separator", ":");
+        vars.put("classpath_separator", classpathSeparator);
         vars.put("library_directory", librariesDir.toString());
         vars.put("resolution_width", String.valueOf(width));
         vars.put("resolution_height", String.valueOf(height));
